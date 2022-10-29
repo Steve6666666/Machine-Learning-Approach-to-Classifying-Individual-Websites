@@ -343,3 +343,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+# nodejs
+# only allow package-lock.json
+package.json
