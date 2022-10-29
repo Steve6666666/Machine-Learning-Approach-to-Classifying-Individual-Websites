@@ -1,0 +1,22 @@
+{
+  "name": "cs552",
+  "version": "1.0.0",
+  "description": "<div id=\"top\"></div>",
+  "main": "test3.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Steve6666666/CS552.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Steve6666666/CS552/issues"
+  },
+  "homepage": "https://github.com/Steve6666666/CS552#readme",
+  "dependencies": {
+    "puppeteer": "^19.2.0"
+  }
+}
