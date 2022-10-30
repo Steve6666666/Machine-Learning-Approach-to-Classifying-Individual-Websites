@@ -1,16 +1,54 @@
 const puppeteer = require('puppeteer');
 
-async function yelp_login(page, link, email, password){
-	await page.goto(link, {waitUntil: 'networkidle2'});
+const ANSI_COLOR_RESET = "\x1b[0m";
+const ANSI_COLOR_RED = "\x1b[31m";
+const ANSI_COLOR_GREEN = "\x1b[32m";
+const ANSI_COLOR_YELLOW = "\x1b[33m";
 
+function colorizeString(content, color="default"){
+	if (color == 'red'){
+		content = ANSI_COLOR_RED + content;
+	}
+	else if(color == 'green'){
+		content = ANSI_COLOR_GREEN + content;
+	}
+	else if (color == 'yellow'){
+		content = ANSI_COLOR_YELLOW + content;
+	}
+	content += ANSI_COLOR_RESET;
+	return content
+}
+
+async function yelp_login(page, link, email, password){
+	process.stdout.write("Navigating to login link...");
+	await page.goto(link, {waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Filling up email...");
 	const emailField = await page.$('form[action*=login] > #email');
 	await emailField.type(email, {delay: 100});
+	process.stdout.write(colorizeString("done!\n", "green"));
 
+	process.stdout.write("Filling up password...");
 	const passwordField = await page.$('form[action*=login] > #password');
 	await passwordField.type(password, {delay: 100});
+	process.stdout.write(colorizeString("done!\n", "green"));
 
+	console.log(
+		"Input email: " +
+		colorizeString(await emailField.evaluate(e => e.value), "yellow")
+	);
+	console.log(
+		"Input password: " +
+		colorizeString(await passwordField.evaluate(e => e.value), "yellow")
+	);
+
+	process.stdout.write("Submitting login request by pressing Enter and waiting for navigation...");
 	await passwordField.press("Enter");
 	await page.waitForNavigation({waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	console.log("Login complete!");
 
 	await page.screenshot({path: './screenshot.png', fullPage: true});
 	return page
@@ -31,11 +69,15 @@ async function yelp(page, login=false){
 	const email = "";
 	const password = "";
 
+	process.stdout.write("Navigating to " + colorizeString(yelp_home, 'yellow') + " ...");
 	await page.goto(yelp_home, {waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
 	
+	process.stdout.write("Extracting all hyperlinks...");
 	const hrefs = await page.evaluate(() => {
 		return Array.from(document.getElementsByTagName('a'), a => a.href);
 	});
+	process.stdout.write(colorizeString("done!\n", "green"));
 	
 	if(login){
 		process.stdout.write("Extracting login link...");
@@ -82,11 +124,19 @@ async function yelp(page, login=false){
 }
 
 async function main(){
+	process.stdout.write("Initializing puppeteer...");
 	const [browser, page] = await puppeteerInit();
+	process.stdout.write(colorizeString("done!\n", "green"));
+	
+	console.log();
 	
 	await yelp(page, login=false);
 	
+	console.log();
+
+	process.stdout.write("Terminating puppeteer...");
 	await browser.close();
+	process.stdout.write(colorizeString("done!\n", "green"));
 }
 
 main();
