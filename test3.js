@@ -1,10 +1,19 @@
 const puppeteer = require('puppeteer');
 
+/**
+ * ANSI color codes
+ */
 const ANSI_COLOR_RESET = "\x1b[0m";
 const ANSI_COLOR_RED = "\x1b[31m";
 const ANSI_COLOR_GREEN = "\x1b[32m";
 const ANSI_COLOR_YELLOW = "\x1b[33m";
 
+/**
+ * Colorizes a input string.
+ * @param {String} content - string to be colorized
+ * @param {String} color - target color
+ * @return {String} string encapsulated with ANSI color code
+ */
 function colorizeString(content, color="default"){
 	if (color == 'red'){
 		content = ANSI_COLOR_RED + content;
@@ -19,6 +28,14 @@ function colorizeString(content, color="default"){
 	return content
 }
 
+/**
+ * Yelp login code.
+ * @param {puppeteer.Page} page - puppeteer Page instance
+ * @param {String} link - login link address
+ * @param {String} email - account email
+ * @param {String} password - account password
+ * @return redirected page after login
+ */
 async function yelp_login(page, link, email, password){
 	process.stdout.write("Navigating to login link...");
 	await page.goto(link, {waitUntil: 'networkidle2'});
@@ -63,6 +80,11 @@ async function puppeteerInit(){
 	return [browser, page];
 }
 
+/**
+ * Yelp crawler code.
+ * @param {puppeteer.Page} page - puppeteer Page instance
+ * @param {Boolean} login - use login if true
+ */
 async function yelp(page, login=false){
 	// todo: these parameters should be read from a configuration file later
 	const yelp_home = 'https://www.yelp.com';
