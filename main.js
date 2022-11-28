@@ -36,6 +36,24 @@ function colorizeString(content, color="default"){
 	return content
 }
 
+/**
+ * get user input
+ * @param {String} question - question display in command prompt
+ * @returns {String} - User input string
+ */
+async function userInput(question){
+	const readline = require('readline').createInterface({
+		input: process.stdin,
+		output: process.stdout
+	});
+	return new Promise((resolve, reject) => {
+		readline.question(question, data => {
+			readline.close();
+			resolve(data);
+		})
+	});
+}
+
 async function puppeteerInit(){
 	const args = puppeteer.defaultArgs().filter(arg => arg !== '--enable-asm-webassembly');
 	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer');
@@ -697,6 +715,74 @@ async function target_login(page, website, hrefs, email, password, type_delay_pe
 	}
 	
 	process.stdout.write(colorizeString("done!\n", "green"));
+
+	console.log("Login complete!");
+
+	if(debug){
+		await page.screenshot({path: websiteDebugDir + website + "_final.png", fullPage: true});
+	}
+	return page
+}
+
+/**
+ * Yahoo login code
+ * Please note that this login requires verification code
+ * @param {puppeteer.Page} page - puppeteer Page instance
+ * @param {String} website - website name
+ * @param {String} hrefs - links from home page
+ * @param {String} email - account email
+ * @param {String} password - account password
+ * @param {Number} type_delay_per_char - type speed in ms
+ * @param {Boolean} debug - debug mode
+ * @return {puppeteer.Page} - redirected page after login
+ */
+async function yahoo_login(page, website, hrefs, email, password, type_delay_per_char=200, debug=false){
+	// note: gmail sign in requires verification code
+	let websiteDebugDir = DEBUG_DIR + website + "/";
+	if(debug){
+		if(!fs.existsSync(websiteDebugDir)){
+			fs.mkdirSync(websiteDebugDir, {recursive: true});
+		}
+	}
+
+	process.stdout.write("Extracting login link...");
+	const login_link = hrefs.filter(x => x.search('signin') != -1)[0]
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Navigating to login link...");
+	await page.goto(login_link, {waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Filling up email...");
+	const emailField = await page.$('#login-username');
+	
+	await emailField.type(email, {delay: type_delay_per_char});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	console.log(
+		"Input email: " +
+		colorizeString(await emailField.evaluate(e => e.value), "yellow")
+	);
+	
+	// disable stay sign-in
+	await page.click("label[for=persistent]");
+
+	if(debug){
+		await page.screenshot({path: websiteDebugDir + website + "_1.png", fullPage: true});
+	}
+
+	await page.click("#login-signin");
+
+	const verificationField = await page.waitForSelector("#verification-code-field");
+	
+	if(debug){
+		await page.screenshot({path: websiteDebugDir + website + "_2.png", fullPage: true});
+	}
+
+	let verificationCode = await userInput("Please enter verification code: ");
+	await verificationField.type(verificationCode, {delay: type_delay_per_char});
+	await page.click("#verify-code-button");
+	await page.waitForNavigation({waitUntil: 'networkidle2'});
 
 	console.log("Login complete!");
 
