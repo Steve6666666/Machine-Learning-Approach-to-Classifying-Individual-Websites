@@ -357,6 +357,66 @@ async function ebay_login(page, website, hrefs, email, password, type_delay_per_
 	return page
 }
 
+/**
+ * foxnews login code
+ * @param {puppeteer.Page} page - puppeteer Page instance
+ * @param {String} website - website name
+ * @param {String} hrefs - links from home page
+ * @param {String} email - account email
+ * @param {String} password - account password
+ * @param {Number} type_delay_per_char - type speed in ms
+ * @param {Boolean} debug - debug mode
+ * @return {puppeteer.Page} - redirected page after login
+ */
+async function foxnews_login(page, website, hrefs, email, password, type_delay_per_char=200, debug=false){
+	
+	let websiteDebugDir = DEBUG_DIR + website + "/";
+	if(debug){
+		if(!fs.existsSync(websiteDebugDir)){
+			fs.mkdirSync(websiteDebugDir, {recursive: true});
+		}
+	}
+	
+	process.stdout.write("Extracting login link...");
+	const login_link = "https://my.foxnews.com/"
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Navigating to login link...");
+	await page.goto(login_link, {waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Filling up email...");
+	const emailField = await page.$("input[type=email]");
+	await emailField.type(email, {delay: type_delay_per_char});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	process.stdout.write("Filling up password...");
+	const passwordField = await page.$('input[type=password]');
+	await passwordField.type(password, {delay: type_delay_per_char});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	console.log(
+		"Input email: " +
+		colorizeString(await emailField.evaluate(e => e.value), "yellow")
+	);
+	console.log(
+		"Input password: " +
+		colorizeString(await passwordField.evaluate(e => e.value), "yellow")
+	);
+
+	process.stdout.write("Submitting login request by pressing Enter and waiting for navigation...");
+	await passwordField.press("Enter");
+	await page.waitForNavigation({waitUntil: 'networkidle2'});
+	process.stdout.write(colorizeString("done!\n", "green"));
+
+	console.log("Login complete!");
+
+	if(debug){
+		await page.screenshot({path: websiteDebugDir + website + '_final.png', fullPage: true});
+	}
+	return page
+}
+
 async function main(){
 	let login = false;
 
