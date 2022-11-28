@@ -71,15 +71,15 @@ This is a course project of Rutgers CS552 Computer Network.
 ### Login Site
 
 - [x] www.yelp.com
-- [ ] www.britannica.com
-- [ ] www.cnn.com
-- [ ] www.ebay.com
-- [ ] www.foxnews.com
-- [ ] www.nfl.com
-- [ ] www.nytimes.com
-- [ ] www.reddit.com
-- [ ] www.target.com
-- [ ] www.yahoo.com
+- [x] www.britannica.com
+- [x] www.cnn.com
+- [x] www.ebay.com
+- [x] www.foxnews.com
+- [x] www.nfl.com
+- [ ] ~~www.nytimes.com~~
+- [x] www.reddit.com
+- [ ] ~~www.target.com~~
+- [x] www.yahoo.com
 
 
 
