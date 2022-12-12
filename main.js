@@ -2,6 +2,8 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 const DEBUG_DIR = "./debug/";
+const HOME_TIMEOUT = 300000; //home address navigation timeout value in ms
+const LINK_TIMEOUT = 60000; //link navigation timeout value in ms
 
 /**
  * config file
@@ -75,7 +77,7 @@ async function crawl(page, website, login=false){
 	const password = config[website].password;
 
 	process.stdout.write("Navigating to " + colorizeString(home, 'yellow') + " ...");
-	await page.goto(home, {waitUntil: 'networkidle2'});
+	await page.goto(home, {waitUntil: 'networkidle2', timeout: HOME_TIMEOUT});
 	process.stdout.write(colorizeString("done!\n", "green"));
 	
 	process.stdout.write("Extracting all hyperlinks...");
@@ -99,7 +101,7 @@ async function crawl(page, website, login=false){
 		if(hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1){
 			continue;
 		}
-		await page.goto(hrefs[i], {'timeout': 60000});
+		await page.goto(hrefs[i], {'timeout': LINK_TIMEOUT});
 		//await page.goBack();
 		var cur=await page.evaluate(() => {
 			return Array.from(document.getElementsByTagName('a'), a => a.href);
