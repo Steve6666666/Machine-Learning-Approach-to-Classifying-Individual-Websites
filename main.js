@@ -101,11 +101,15 @@ async function crawl(page, website, login=false){
 		if(hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1){
 			continue;
 		}
-		await page.goto(hrefs[i], {'timeout': LINK_TIMEOUT});
-		//await page.goBack();
-		var cur=await page.evaluate(() => {
-			return Array.from(document.getElementsByTagName('a'), a => a.href);
-		});
+		try{
+			await page.goto(hrefs[i], {'timeout': LINK_TIMEOUT});
+			//await page.goBack();
+			var cur=await page.evaluate(() => {
+				return Array.from(document.getElementsByTagName('a'), a => a.href);
+			});
+		} catch(e){
+			console.log(e.message);
+		}
 
 		if(hrefs.length < 20000){
 			hrefs.push.apply(hrefs, cur);
