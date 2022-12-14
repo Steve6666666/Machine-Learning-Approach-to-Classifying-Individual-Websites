@@ -345,3 +345,4 @@ $RECYCLE.BIN/
 *.lnk
 
 config.json
+data/
