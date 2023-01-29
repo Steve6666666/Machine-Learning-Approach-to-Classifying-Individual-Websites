@@ -17,7 +17,8 @@ do
 	if [ -f "./data/TCP-filtered/$1/$(basename $eachfile)" ]; then
 		echo "already filtered so skip."
 	else
-		tshark -Y "tcp and ip.src==$2 or ip.dst==$2" -r $eachfile -w "./data/TCP-filtered/$1/$(basename $eachfile)" -F libpcap
+		tshark -Y "tcp and tcp.port==443 and (ip.src==$2 or ip.dst==$2)" -r $eachfile -w "./data/TCP-filtered/$1/$(basename $eachfile)" -F libpcap
 		echo "done!"
 	fi
 done
+ 
