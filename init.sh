@@ -1,7 +1,7 @@
 sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | sudo bash
 
 sudo chmod 775 ~/.nvm
-
+. ~/.bashrc
 nvm install 17 -y
 
 sudo apt-get update -y
