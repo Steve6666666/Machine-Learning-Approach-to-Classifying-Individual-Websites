@@ -7,6 +7,8 @@ nvm install 17 -y
 sudo apt-get update -y
 sudo apt-get install -y man-db
 sudo apt-get install -y chromium-browser
+sudo apt install python3-pip
+pip3 install dpkt
 
 ~/.nvm/versions/node/v17.9.1/bin/npm i puppeteer
 
