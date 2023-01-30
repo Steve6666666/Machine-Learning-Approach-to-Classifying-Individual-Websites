@@ -19,7 +19,7 @@ if screen -ls | grep -q "collector"; then
 fi
 
 echo -n "Creating new crawler process..."
-screen -S crawler -d -m node main.js $1
+screen -S crawler -d -m sh autorun.sh $1
 echo "done!"
 
 echo -n "Creating new collector process..."
