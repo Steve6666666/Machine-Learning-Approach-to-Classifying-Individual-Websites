@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit
 fi
 
-mkdir -p "data/$1"
+mkdir -p "data/TCP-unfiltered/$1"
 
 if screen -ls | grep -q "crawler"; then
     echo -n "Terminating previous crawler screen..."
@@ -23,5 +23,5 @@ screen -S crawler -d -m sh autorun.sh $1
 echo "done!"
 
 echo -n "Creating new collector process..."
-screen -S collector -d -m sudo tcpdump -s 0 -i eth0 -G 3600 -w "data/$1/$1_%d-%m_%Y__%H_%M.pcap"
+screen -S collector -d -m sudo tcpdump -s 0 -i eth0 -G 3600 -w "data/TCP-unfiltered/$1/$1_%d-%m_%Y__%H_%M.pcap"
 echo "done!"
