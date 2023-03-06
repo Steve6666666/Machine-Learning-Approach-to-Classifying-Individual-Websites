@@ -129,7 +129,10 @@ async function crawl(page, website, login=false){
 		}*/
 		console.log(i + " " + hrefs[i]);
 		var end = Date.now();
-                		var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ "\n";
+		const currentDate = new Date();
+                		const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+                		var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ " Date:"+ formattedDate  + "\n";
+                		//var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ "\n";
                 		fs.appendFile('time.txt', time, (err) => {
                         		if (err) throw err;
                         		console.log('The file has been saved!');
