@@ -62,6 +62,11 @@ This is a course project of Rutgers CS552 Computer Network.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## project setup
+* vultr setup:
+
+* 
+
 ## Project Structure
 
 <p align="right">(<a href="#top">back to top</a>)</p>
