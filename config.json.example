@@ -48,5 +48,60 @@
         "home": "https://www.yahoo.com",
         "email": "",
         "password": ""
+    },
+    "apple": {
+        "home": "www.apple.com",
+        "email": "",
+        "password": ""
+    },
+    "pinterest": {
+        "home": "www.pinterest.com",
+        "email": "",
+        "password": ""
+    },
+    "wikipedia": {
+        "home": "www.wikipedia.org",
+        "email": "",
+        "password": ""
+    },
+    "zhihu": {
+        "home": "www.zhihu.com",
+        "email": "",
+        "password": ""
+    },
+    "taobao": {
+        "home": "world.taobao.com",
+        "email": "",
+        "password": ""
+    },
+    "sina": {
+        "home": "www.sina.com.cn",
+        "email": "",
+        "password": ""
+    },
+    "iq": {
+        "home": "www.iq.com",
+        "email": "",
+        "password": ""
+    },
+    "bilibili": {
+        "home": "www.bilibili.com",
+        "email": "",
+        "password": ""
+    },
+    "fandom": {
+        "home": "https://www.fandom.com/",
+        "email": "",
+        "password": ""
+    },
+    "taboola": {
+        "home": "https://www.taboola.com/",
+        "email": "",
+        "password": ""
+    },
+    "amazon": {
+        "home": "https://www.amazon.com/",
+        "email": "",
+        "password": ""
     }
 }
