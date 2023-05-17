@@ -5,7 +5,7 @@ import paramiko
 hostname = 'ilab3.cs.rutgers.edu'
 port = 22
 username = 'cs1346'
-password = 'Steve202502'
+password = ''
 remote_path = '/common/home/cs1346/webid/WIRED/Data/valur/wikipedia'
 
 while True:
