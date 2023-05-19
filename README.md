@@ -62,10 +62,41 @@ This is a course project of Rutgers CS552 Computer Network.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## project setup
-* vultr setup:
+## Project setup
 
-* 
+* Dependency setup:
+
+    ```sh
+    source init.sh
+    ```
+
+* Data collect script:
+    
+    Change `[website_name]` with a specific website name
+    ```sh
+    sh collect.sh [website_name]
+    ```
+
+    This will create two processes (crawler and collector) in two screens.
+
+    * Show screen list:
+    
+        ```sh
+        screen -ls
+        ```
+
+    * Resume screen:
+        ```sh
+        screen -r [screen_name]
+        ```
+        for example
+
+        ```sh
+        screen -r crawler
+        ```
+
+    * Detach screen: Press `Ctrl + A + D`
+* vultr setup:
 
 ## Project Structure
 
