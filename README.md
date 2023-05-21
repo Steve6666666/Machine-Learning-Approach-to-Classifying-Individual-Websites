@@ -64,28 +64,36 @@ This is a course project of Rutgers CS552 Computer Network.
 
 ## Project setup
 
-* Dependency setup:
+* Dependency setup
 
     ```sh
     source init.sh
     ```
 
-* Data collect script:
+* Install `tshark`
+
+    ```sh
+    apt install tshark -y
+    ```
+
+* Data collect script
     
     Change `[website_name]` with a specific website name
+    
     ```sh
     sh collect.sh [website_name]
     ```
 
     This will create two processes (crawler and collector) in two screens.
 
-    * Show screen list:
+    * Show screen list
     
         ```sh
         screen -ls
         ```
 
-    * Resume screen:
+    * Resume screen
+        
         ```sh
         screen -r [screen_name]
         ```
@@ -96,6 +104,20 @@ This is a course project of Rutgers CS552 Computer Network.
         ```
 
     * Detach screen: Press `Ctrl + A + D`
+
+* Data filter script
+
+    Change `[website_name]` with the corresponding website name and `IPv4 address` with the server's IPv4 address
+
+    ```sh
+    sh filter.sh [website_name] [IPv4 address]
+    ```
+
+    Check the server's IPv4 address
+
+    ```sh
+    ifconfig
+    ```
 
 * Vultr setup
 

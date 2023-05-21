@@ -3,6 +3,8 @@ if [ -z "$1" ]; then
 	exit
 fi
 
+mkdir -p "./data/dat-files/"
+
 filteredTCPFiles=`ls ./data/TCP-filtered/$1/*`
 for eachfile in $filteredTCPFiles
 do 
