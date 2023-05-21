@@ -103,5 +103,15 @@
         "home": "https://www.amazon.com/",
         "email": "",
         "password": ""
+    },
+    "pornhub": {
+        "home": "https://cn.pornhub.com/",
+        "email": "",
+        "password": ""
+    },
+    "xvideos": {
+        "home": "https://www.xvideos.com/",
+        "email": "",
+        "password": ""
     }
 }
