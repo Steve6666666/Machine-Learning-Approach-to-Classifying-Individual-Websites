@@ -58,7 +58,7 @@ async function userInput(question){
 
 async function puppeteerInit(){
 	const args = puppeteer.defaultArgs().filter(arg => arg !== '--enable-asm-webassembly');
-	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer');
+	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer' , '--disable-quic','--disable-features=NetworkService,NetworkServiceInProcess');
 	const browser = await puppeteer.launch({ ignoreDefaultArgs: true, args });
 	const page = await browser.newPage();
 	await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36');
