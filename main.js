@@ -94,7 +94,60 @@ async function crawl(page, website, login=false){
 	}
 
 	console.log("Crawlling begins...")
-	
+	await normal(page, website, hrefs, fs);
+	// for(let i = 0; i < hrefs.length; i++){
+	// 	var begin=Date.now();
+	// 	if(hrefs[i] == ''){
+	// 		continue
+	// 	}
+	// 	if(hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1){
+	// 		continue;
+	// 	}
+	// 	try{
+	// 		await page.goto(hrefs[i], {'timeout': LINK_TIMEOUT});
+	// 		//await page.goBack();
+	// 		var cur=await page.evaluate(() => {
+	// 			return Array.from(document.getElementsByTagName('a'), a => a.href);
+	// 		});
+	// 		cur= shuffleArray(cur)
+	// 	} catch(e){
+	// 		console.log(e.message);
+	// 	}
+
+	// 	if(hrefs.length < 20000){
+	// 		hrefs.push.apply(hrefs, cur);
+	// 	}/*else{
+	// 		const fs = require('fs');
+	// 		for(let i =0;i<hrefs.length;i++){
+	// 			fs.writeFile('./target.txt',hrefs[i],function (err,data) {
+	// 				if (err) {
+	// 					return console.log(err);
+	// 				}
+	// 				console.log(data);
+	// 			});
+	// 		}
+	// 	}*/
+	// 	console.log(i + " " + hrefs[i]);
+	// 	var end = Date.now();
+	// 	const currentDate = new Date();
+    //             		const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+    //             		var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ " Date:"+ formattedDate  + "\n";
+    //             		//var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ "\n";
+    //             		fs.appendFile(`${website}.txt`, time, (err) => {
+    //                     		if (err) throw err;
+    //                     		console.log('The file has been saved!');
+    //            		 });
+	// }
+}
+function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+}
+
+async function normal(page, website, hrefs, fs) {
 	for(let i = 0; i < hrefs.length; i++){
 		var begin=Date.now();
 		if(hrefs[i] == ''){
@@ -139,14 +192,6 @@ async function crawl(page, website, login=false){
                		 });
 	}
 }
-function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-}
-
 
 
 /**
