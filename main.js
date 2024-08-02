@@ -213,6 +213,7 @@ async function video_site(page, website, hrefs, fs){
 	
 			if (hasVideo) {
 				// Play the video if it exists
+				console.log('has video')
 				await page.evaluate(() => {
 					const videoElements = document.getElementsByTagName('video');
 					for (let video of videoElements) {
