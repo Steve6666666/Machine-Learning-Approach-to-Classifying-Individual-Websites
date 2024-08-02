@@ -92,9 +92,11 @@ async function crawl(page, website, login=false){
 		let debug = true;
 		page = await eval(website + "_login(page, website, hrefs, email, password, type_delay_per_char=type_delay_per_char, debug=debug)");
 	}
-
 	console.log("Crawlling begins...")
-	await normal(page, website, hrefs, fs);
+	
+	//await normal(page, website, hrefs, fs);
+	await video_site(page, website, hrefs, fs);
+
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
 	// 	if(hrefs[i] == ''){
@@ -192,6 +194,48 @@ async function normal(page, website, hrefs, fs) {
                		 });
 	}
 }
+async function video_site(page, website, hrefs, fs){
+	for (let i = 0; i < hrefs.length; i++) {
+		var begin = Date.now();
+		if (hrefs[i] == '') {
+			continue;
+		}
+		if (hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
+			continue;
+		}
+		try {
+			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
+			// Check for video elements on the page
+			const hasVideo = await page.evaluate(() => {
+				const videoElements = document.getElementsByTagName('video');
+				return videoElements.length > 0;
+			});
+	
+			if (hasVideo) {
+				// Play the video if it exists
+				await page.evaluate(() => {
+					const videoElements = document.getElementsByTagName('video');
+					for (let video of videoElements) {
+						video.play();
+					}
+				});
+				// Wait for a certain time to simulate watching the video
+				await page.waitForTimeout(5000); // Adjust the time as needed
+			}
+			var cur = await page.evaluate(() => {
+				return Array.from(document.getElementsByTagName('a'), a => a.href);
+			});
+			cur = shuffleArray(cur);
+		} catch (e) {
+			console.log(e.message);
+		}
+	
+		if (hrefs.length < 20000) {
+			hrefs.push.apply(hrefs, cur);
+		}
+	}	
+}
+
 
 
 /**
