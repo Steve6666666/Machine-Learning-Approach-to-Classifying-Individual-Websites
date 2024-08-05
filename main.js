@@ -269,7 +269,7 @@ async function video_site(page, website, hrefs, fs,numbers){
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
         var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
-        fs.appendFile(`${website}.txt`, time, (err) => {
+        fs.appendFile(`${website}_url.txt`, time, (err) => {
             if (err) throw err;
             console.log('The file has been saved!');
         });
