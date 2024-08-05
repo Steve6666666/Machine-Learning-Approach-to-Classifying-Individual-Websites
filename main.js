@@ -252,7 +252,7 @@ async function video_site(page, website, hrefs, fs,numbers){
                 const randomTime = getRandomSample(numbers);
                 // Wait for a certain time to simulate watching the video
 				console.log('time spend on this sites:',randomTime)
-                await page.waitForTimeout(randomTime); // 使用随机选取的时间
+                await page.waitForTimeout(randomTime*2000); // 使用随机选取的时间
             }
 
             var cur = await page.evaluate(() => {
