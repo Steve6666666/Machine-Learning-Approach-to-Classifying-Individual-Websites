@@ -98,7 +98,7 @@ async function crawl(page, website, login=false){
 	
 	//await normal(page, website, hrefs, fs);
 	// await video_site(page, website, hrefs, fs);
-	const numbers = await readNumbersFromFile('name.txt');
+	const numbers = await readNumbersFromFile('tiktok.txt');
 	await video_site(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
