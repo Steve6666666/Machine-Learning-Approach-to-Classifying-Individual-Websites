@@ -17,7 +17,6 @@ const ANSI_COLOR_RESET = "\x1b[0m";
 const ANSI_COLOR_RED = "\x1b[31m";
 const ANSI_COLOR_GREEN = "\x1b[32m";
 const ANSI_COLOR_YELLOW = "\x1b[33m";
-const fs = require('fs');
 const readline = require('readline');
 const { once } = require('events');
 
