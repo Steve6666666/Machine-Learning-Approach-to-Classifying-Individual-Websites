@@ -246,12 +246,12 @@ async function video_site(page, website, hrefs, fs,numbers){
                 }
                 return false;
             });
-
+			console.log(hasVideo)
             if (hasVideo) {
                 // 从数字列表中随机选择一个时间
                 const randomTime = getRandomSample(numbers);
                 // Wait for a certain time to simulate watching the video
-				console.log('time spend on this sites')
+				console.log('time spend on this sites:',randomTime)
                 await page.waitForTimeout(randomTime); // 使用随机选取的时间
             }
 
