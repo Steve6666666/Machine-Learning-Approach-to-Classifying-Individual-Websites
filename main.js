@@ -95,7 +95,9 @@ async function crawl(page, website, login=false){
 	console.log("Crawlling begins...")
 	
 	//await normal(page, website, hrefs, fs);
-	await video_site(page, website, hrefs, fs);
+	// await video_site(page, website, hrefs, fs);
+	const numbers = await readNumbersFromFile('name.txt');
+	await video_site(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
@@ -222,47 +224,56 @@ async function normal(page, website, hrefs, fs) {
                		 });
 	}
 }
-async function video_site(page, website, hrefs, fs){
+async function video_site(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
-		var begin = Date.now();
-		if (hrefs[i] == '') {
-			continue;
-		}
-		if (hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
-			continue;
-		}
-		try {
-			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			// Check for video elements on the page
-			const hasVideo = await page.evaluate(() => {
-				const videoElements = document.getElementsByTagName('video');
-				return videoElements.length > 0;
-			});
-	
-			if (hasVideo) {
-				// Play the video if it exists
-				console.log('has video')
-				await page.evaluate(() => {
-					const videoElements = document.getElementsByTagName('video');
-					for (let video of videoElements) {
-						video.play();
-					}
-				});
-				// Wait for a certain time to simulate watching the video
-				await page.waitForTimeout(5000); // Adjust the time as needed
-			}
-			var cur = await page.evaluate(() => {
-				return Array.from(document.getElementsByTagName('a'), a => a.href);
-			});
-			cur = shuffleArray(cur);
-		} catch (e) {
-			console.log(e.message);
-		}
-	
-		if (hrefs.length < 20000) {
-			hrefs.push.apply(hrefs, cur);
-		}
-	}	
+        var begin = Date.now();
+        if (hrefs[i] == '' || hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
+            continue;
+        }
+        try {
+            await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
+
+            // Check for video elements and play them if they exist
+            const hasVideo = await page.evaluate(() => {
+                const videoElements = document.getElementsByTagName('video');
+                if (videoElements.length > 0) {
+                    for (let video of videoElements) {
+                        video.play();
+                    }
+                    return true;
+                }
+                return false;
+            });
+
+            if (hasVideo) {
+                // 从数字列表中随机选择一个时间
+                const randomTime = getRandomSample(numbers);
+                // Wait for a certain time to simulate watching the video
+				console.log('time spend on this sites')
+                await page.waitForTimeout(randomTime); // 使用随机选取的时间
+            }
+
+            var cur = await page.evaluate(() => {
+                return Array.from(document.getElementsByTagName('a'), a => a.href);
+            });
+            cur = shuffleArray(cur);
+        } catch (e) {
+            console.log(e.message);
+        }
+
+        if (hrefs.length < 20000) {
+            hrefs.push.apply(hrefs, cur);
+        }
+        console.log(i + " " + hrefs[i]);
+        var end = Date.now();
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
+        fs.appendFile(`${website}.txt`, time, (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+    }
 }
 
 
