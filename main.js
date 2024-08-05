@@ -148,6 +148,34 @@ function shuffleArray(array) {
         }
         return array;
 }
+// 读取文件并返回数字列表
+async function readNumbersFromFile(filename) {
+    const fileStream = fs.createReadStream(filename);
+
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    const numbers = [];
+    rl.on('line', (line) => {
+        const num = parseInt(line.trim());
+        if (!isNaN(num)) {
+            numbers.push(num);
+        }
+    });
+
+    await once(rl, 'close');
+    return numbers;
+}
+
+// 随机选择一个数字
+function getRandomSample(arr) {
+    const index = Math.floor(Math.random() * arr.length);
+    return arr[index];
+}
+
+
 
 async function normal(page, website, hrefs, fs) {
 	for(let i = 0; i < hrefs.length; i++){
@@ -188,7 +216,7 @@ async function normal(page, website, hrefs, fs) {
                 		const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
                 		var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ " Date:"+ formattedDate  + "\n";
                 		//var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ "\n";
-                		fs.appendFile(`${website}.txt`, time, (err) => {
+                		fs.appendFile(`${website}_url.txt`, time, (err) => {
                         		if (err) throw err;
                         		console.log('The file has been saved!');
                		 });
