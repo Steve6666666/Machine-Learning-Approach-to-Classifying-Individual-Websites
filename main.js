@@ -97,9 +97,9 @@ async function crawl(page, website, login=false){
 	console.log("Crawlling begins...")
 	
 	//await normal(page, website, hrefs, fs);
-	await video_site2(page, website, hrefs, fs);
+	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	// await video_site(page, website, hrefs, fs, numbers);
+	await video_site(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
