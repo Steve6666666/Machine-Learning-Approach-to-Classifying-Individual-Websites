@@ -253,7 +253,7 @@ async function video_site(page, website, hrefs, fs,numbers){
 				const videoDuration = await page.evaluate(() => {
                     const videoElements = document.getElementsByTagName('video');
                     if (videoElements.length > 0) {
-						print(videoElements.length, videoElements[0].duration)
+						print('-------',videoElements.length, videoElements[0].duration)
                         return videoElements[0].duration;
                     }
                     return 0;
