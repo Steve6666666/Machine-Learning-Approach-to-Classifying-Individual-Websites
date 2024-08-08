@@ -234,7 +234,9 @@ async function video_site(page, website, hrefs, fs,numbers){
         }
         try {
             await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-
+			console.log('time spend on this sites:',randomTime)
+			const randomTime = getRandomSample(numbers);
+			await page.waitForTimeout(randomTime*1000);
             // Check for video elements and play them if they exist
             const hasVideo = await page.evaluate(() => {
                 const videoElements = document.getElementsByTagName('video');
