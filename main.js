@@ -234,8 +234,8 @@ async function video_site(page, website, hrefs, fs,numbers){
         }
         try {
             await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			console.log('time spend on this sites:',randomTime)
 			const randomTime = getRandomSample(numbers);
+			console.log('time spend on this sites:',randomTime)
 			await page.waitForTimeout(randomTime*1000);
             // Check for video elements and play them if they exist
             const hasVideo = await page.evaluate(() => {
@@ -253,7 +253,7 @@ async function video_site(page, website, hrefs, fs,numbers){
                 // 从数字列表中随机选择一个时间
                 const randomTime = getRandomSample(numbers);
                 // Wait for a certain time to simulate watching the video
-				console.log('time spend on this sites:',randomTime)
+				console.log('time spend on this video:',randomTime)
                 await page.waitForTimeout(randomTime*2000); // 使用随机选取的时间
             }
 
