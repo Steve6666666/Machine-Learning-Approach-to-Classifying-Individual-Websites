@@ -333,6 +333,65 @@ async function video_site2(page, website, hrefs, fs){
 	}	
 }
 
+async function moveMouseAndClick(page) {
+    const images = await page.$$('img'); // 获取所有图片元素
+    if (images.length > 0) {
+        // 随机选择一张图片
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        const boundingBox = await randomImage.boundingBox();
+        
+        if (boundingBox) {
+            const x = boundingBox.x + boundingBox.width / 2;
+            const y = boundingBox.y + boundingBox.height / 2;
+
+            // 移动鼠标并点击图片
+            await page.mouse.move(x, y);
+            await page.waitForTimeout(500); // 模拟人类的延迟
+            await page.mouse.click(x, y);
+        }
+    }
+}
+// 重写 processLinks 函数
+async function e_commerce_site(page, website, hrefs, fs, numbers) {
+    for (let i = 0; i < hrefs.length; i++) {
+        if (hrefs[i] == '' || hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
+            continue;
+        }
+        try {
+            await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
+            
+            // 模拟鼠标移动和点击图片
+            await moveMouseAndClick(page);
+
+            // 随机等待时间
+            const randomTime = getRandomSample(numbers);
+            if (randomTime !== undefined && !isNaN(randomTime)) {
+                await page.waitForTimeout(randomTime*1000); // 使用随机选取的时间
+            }
+
+            // 提取页面中的所有链接
+            var cur = await page.evaluate(() => {
+                return Array.from(document.getElementsByTagName('a'), a => a.href);
+            });
+            cur = shuffleArray(cur);
+        } catch (e) {
+            console.log(e.message);
+        }
+
+        if (hrefs.length < 20000) {
+            hrefs.push.apply(hrefs, cur);
+        }
+        console.log(i + " " + hrefs[i]);
+        var end = Date.now();
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
+        fs.appendFile(`${website}.txt`, time, (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+    }
+}
 
 
 
