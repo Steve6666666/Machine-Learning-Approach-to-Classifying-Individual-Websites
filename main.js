@@ -238,15 +238,21 @@ async function video_site(page, website, hrefs, fs,numbers){
 			// console.log('time spend on this sites:',randomTime)
 			await page.waitForTimeout(5000);
             // Check for video elements and play them if they exist
-            const duration = await page.evaluate(() => {
+            const duration = await page.evaluate(async () => {
                 const videoElements = document.getElementsByTagName('video');
 				// console.log('videoElements.length ----',videoElements.length)
 				const durations = []; 
                 if (videoElements.length > 0) {
                     for (let video of videoElements) {
-                        video.play();
-						// console.log('play video normally');
-						durations.push(video.duration);
+						try{		
+							await video.play();
+							// console.log('play video normally');
+							video.addEventListener('loadedmetadata', () => {
+								durations.push(video.duration); // 将视频的时长添加到列表中
+							});
+						}catch(e){
+							console.log('Error playing video:', e.message); 
+						}
                     }
                     
                 }
