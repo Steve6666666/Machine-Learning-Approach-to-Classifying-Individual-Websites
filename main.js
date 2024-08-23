@@ -243,7 +243,7 @@ async function video_site(page, website, hrefs, fs,numbers){
                 if (videoElements.length > 0) {
                     for (let video of videoElements) {
                         video.play();
-						console.log('play video normally')
+						console.log('play video normally');
                     }
                     return true;
                 }
