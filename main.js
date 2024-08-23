@@ -236,39 +236,41 @@ async function video_site(page, website, hrefs, fs,numbers){
             await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
 			// const randomTime = getRandomSample(numbers);
 			// console.log('time spend on this sites:',randomTime)
-			await page.waitForTimeout(3000);
+			await page.waitForTimeout(5000);
             // Check for video elements and play them if they exist
-            const hasVideo = await page.evaluate(() => {
+            const duration = await page.evaluate(() => {
                 const videoElements = document.getElementsByTagName('video');
-				console.log('videoElements.length ----',videoElements.length)
+				// console.log('videoElements.length ----',videoElements.length)
+				const durations = []; 
                 if (videoElements.length > 0) {
                     for (let video of videoElements) {
                         video.play();
-						console.log('play video normally');
+						// console.log('play video normally');
+						durations.push(video.duration);
                     }
-                    return true;
+                    
                 }
-                return false;
+                return durations;
             });
-			console.log(hasVideo)
-            if (hasVideo) {
-				const videoDuration = await page.evaluate(() => {
-                    const videoElements = document.getElementsByTagName('video');
-                    if (videoElements.length > 0) {
-						print('-------',videoElements.length, videoElements[0].duration)
-                        return videoElements[0].duration;
-                    }
-                    return 0;
-                });
+			console.log(duration)
+            // if (hasVideo) {
+			// 	const videoDuration = await page.evaluate(() => {
+            //         const videoElements = document.getElementsByTagName('video');
+            //         if (videoElements.length > 0) {
+			// 			print('-------',videoElements.length, videoElements[0].duration)
+            //             return videoElements[0].duration;
+            //         }
+            //         return 0;
+            //     });
 
 
-                // 从数字列表中随机选择一个时间
-                const randomTime = getRandomSample(numbers);
-				const waitTime = Math.min(videoDuration * 1000, 3*randomTime);
-                // Wait for a certain time to simulate watching the video
-				console.log('time spend on this video:',waitTime)
-                await page.waitForTimeout(randomTime*1000); // 使用随机选取的时间
-            }
+            //     // 从数字列表中随机选择一个时间
+            //     const randomTime = getRandomSample(numbers);
+			// 	const waitTime = Math.min(videoDuration * 1000, 3*randomTime);
+            //     // Wait for a certain time to simulate watching the video
+			// 	console.log('time spend on this video:',waitTime)
+            //     await page.waitForTimeout(randomTime*1000); // 使用随机选取的时间
+            // }
 
             var cur = await page.evaluate(() => {
                 return Array.from(document.getElementsByTagName('a'), a => a.href);
