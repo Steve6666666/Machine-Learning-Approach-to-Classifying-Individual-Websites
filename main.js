@@ -242,22 +242,21 @@ async function video_site(page, website, hrefs, fs,numbers){
                 const videoElements = document.getElementsByTagName('video');
 				// console.log('videoElements.length ----',videoElements.length)
 				const durations = []; 
-				if (videoElements.length > 0) {
-					// 使用 Promise.all 来等待所有的 loadedmetadata 事件
-					await Promise.all(Array.from(videoElements).map(video => {
-						return new Promise((resolve) => {
-							// 监听 loadedmetadata 事件
+                if (videoElements.length > 0) {
+                    for (let video of videoElements) {
+						try{		
+							await video.play();
+							// console.log('play video normally');
 							video.addEventListener('loadedmetadata', () => {
-								durations.push(video.duration); // 将视频的时长添加到数组中
-								resolve(); // 事件触发后 resolve
+								durations.push(video.duration); // 将视频的时长添加到列表中
 							});
-			
-							// 确保视频开始加载
-							video.load();
-						});
-					}));
-				}
-                return durations;
+						}catch(e){
+							console.log('Error playing video:', e.message); 
+						}
+                    }
+                    
+                }
+                return videoElements.length;
             });
 			console.log(duration)
             // if (hasVideo) {
