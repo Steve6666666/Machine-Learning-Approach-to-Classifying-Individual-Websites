@@ -243,8 +243,10 @@ async function video_site(page, website, hrefs, fs,numbers){
 				// console.log('videoElements.length ----',videoElements.length)
 				const durations = []; 
 				let error = null;
+				let src = null;
                 if (videoElements.length > 0) {
                     for (let video of videoElements) {
+						src = video.src
 						try{		
 							await video.play();
 							// console.log('play video normally');
@@ -258,7 +260,7 @@ async function video_site(page, website, hrefs, fs,numbers){
                     }
                     
                 }
-				return error
+				return src
                 // return videoElements.length;
             });
 			console.log(duration)
