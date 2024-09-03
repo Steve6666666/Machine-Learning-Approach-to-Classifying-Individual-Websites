@@ -361,7 +361,7 @@ async function video_site2(page, website, hrefs, fs,numbers){
 					})),
 					page.mouse.click(element.x, element.y) // 这里是你要点击的位置，假设会打开新页面
 				]);
-
+				await page.waitForTimeout(5000);
 				const temp = await page.evaluate(() => {
 					return document.querySelector('.css-weccem-DivAutoScrollButtonContainer').querySelector('path').getAttribute('d')
 				});
