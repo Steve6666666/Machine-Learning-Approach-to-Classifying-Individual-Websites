@@ -329,7 +329,7 @@ async function video_site(page, website, hrefs, fs,numbers){
         });
     }
 }
-async function video_site2(page, website, hrefs, fs){
+async function video_site2(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
 		var begin = Date.now();
 		if (hrefs[i] == '') {
@@ -367,6 +367,15 @@ async function video_site2(page, website, hrefs, fs){
 		if (hrefs.length < 20000) {
 			hrefs.push.apply(hrefs, cur);
 		}
+		console.log(i + " " + hrefs[i]);
+        var end = Date.now();
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
+        fs.appendFile(`${website}_url.txt`, time, (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
 	}	
 }
 
