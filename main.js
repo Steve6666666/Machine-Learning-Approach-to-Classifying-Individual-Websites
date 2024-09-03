@@ -242,6 +242,7 @@ async function video_site(page, website, hrefs, fs,numbers){
                 const videoElements = document.getElementsByTagName('video');
 				// console.log('videoElements.length ----',videoElements.length)
 				const durations = []; 
+				let error = null;
                 if (videoElements.length > 0) {
                     for (let video of videoElements) {
 						try{		
@@ -252,11 +253,13 @@ async function video_site(page, website, hrefs, fs,numbers){
 							});
 						}catch(e){
 							console.log('Error playing video:', e.message); 
+							error = e.message;
 						}
                     }
                     
                 }
-                return videoElements.length;
+				return error
+                // return videoElements.length;
             });
 			console.log(duration)
             // if (hasVideo) {
