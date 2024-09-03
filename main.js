@@ -245,8 +245,9 @@ async function video_site(page, website, hrefs, fs,numbers){
 				let error = null;
 				let src = null;
                 if (videoElements.length > 0) {
+					const sources = videoElement.querySelectorAll('source');
+					src = sources
                     for (let video of videoElements) {
-						src = video.src
 						try{		
 							await video.play();
 							// console.log('play video normally');
