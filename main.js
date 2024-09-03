@@ -99,7 +99,7 @@ async function crawl(page, website, login=false){
 	//await normal(page, website, hrefs, fs);
 	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	await video_site(page, website, hrefs, fs, numbers);
+	await video_site2(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
@@ -340,23 +340,21 @@ async function video_site2(page, website, hrefs, fs){
 		}
 		try {
 			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			// Check for video elements on the page
-			const hasVideo = await page.evaluate(() => {
-				const videoElements = document.getElementsByTagName('video');
-				return videoElements.length > 0;
-			});
-			console.log(hasVideo)
-			if (hasVideo) {
-				// Play the video if it exists
-				await page.evaluate(() => {
-					const videoElements = document.getElementsByTagName('video');
-					for (let video of videoElements) {
-						video.play();
-					}
+			await page.waitForTimeout(5000);
+
+			const elements = await page.evaluate(() => {
+				// 使用属性选择器查找具有 playsinline 属性的元素
+				return Array.from(document.querySelectorAll('video[playsinline]')).map(el => {
+					const { x, y, width, height } = el.getBoundingClientRect();
+					return { x: x + width / 2, y: y + height / 2 }; // 返回每个元素的中心点坐标
 				});
-				// Wait for a certain time to simulate watching the video
-				await page.waitForTimeout(5000); // Adjust the time as needed
+			});
+			console.log(elements.length)
+			for (const element of elements) {
+				await page.mouse.move(element.x, element.y);
+				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
 			}
+
 	
 			var cur = await page.evaluate(() => {
 				return Array.from(document.getElementsByTagName('a'), a => a.href);
