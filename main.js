@@ -352,6 +352,7 @@ async function video_site2(page, website, hrefs, fs,numbers){
 			console.log(elements.length)
 			for (const element of elements) {
 				await page.mouse.move(element.x, element.y);
+				await page.mouse.click(element.x, element.y);
 				await page.waitForTimeout(200000); // 停留 1 秒，让元素有时间播放
 			}
 
