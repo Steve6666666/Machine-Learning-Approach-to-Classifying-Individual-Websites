@@ -344,17 +344,19 @@ async function video_site2(page, website, hrefs, fs,numbers){
 
 			const elements = await page.evaluate(() => {
 				// 使用属性选择器查找具有 playsinline 属性的元素
+				let n = document.querySelector('.css-weccem-DivAutoScrollButtonContainer').querySelector('path').getAttribute('d')
+				return n
 				return Array.from(document.querySelectorAll('video[playsinline]')).map(el => {
 					const { x, y, width, height } = el.getBoundingClientRect();
 					return { x: x + width / 2, y: y + height / 2 }; // 返回每个元素的中心点坐标
 				});
 			});
-			console.log(elements.length)
-			for (const element of elements) {
-				await page.mouse.move(element.x, element.y);
-				await page.mouse.click(element.x, element.y);
-				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
-			}
+			console.log(elements)
+			// for (const element of elements) {
+			// 	await page.mouse.move(element.x, element.y);
+			// 	await page.mouse.click(element.x, element.y);
+			// 	await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
+			// }
 
 	
 			var cur = await page.evaluate(() => {
