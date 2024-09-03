@@ -239,29 +239,52 @@ async function video_site(page, website, hrefs, fs,numbers){
 			await page.waitForTimeout(5000);
             // Check for video elements and play them if they exist
             const duration = await page.evaluate(async () => {
-                const videoElements = document.getElementsByTagName('video');
-				// console.log('videoElements.length ----',videoElements.length)
+                // const videoElements = document.getElementsByTagName('video');
+				const videoElement = document.querySelector('video');
 				const durations = []; 
 				let error = null;
 				let src = null;
-                if (videoElements.length > 0) {
-                    for (let video of videoElements) {
-						const sources = video.querySelectorAll('source');
-						src = sources
-						try{		
-							await video.play();
-							// console.log('play video normally');
-							video.addEventListener('loadedmetadata', () => {
-								durations.push(video.duration); // 将视频的时长添加到列表中
-							});
-						}catch(e){
-							console.log('Error playing video:', e.message); 
-							error = e.message;
-						}
-                    }
+				if (videoElement) {
+					try {
+						// 尝试播放视频
+						await videoElement.play();
+			
+						// 确保视频元数据已加载以获取时长
+						await new Promise((resolve, reject) => {
+							if (videoElement.readyState >= 1) { // 元数据已加载
+								resolve();
+							} else {
+								videoElement.addEventListener('loadedmetadata', resolve);
+								videoElement.addEventListener('error', reject);
+							}
+						});
+						return 'play video';
+					} catch (e) {
+						console.error('Error playing video:', e.message);
+						error = e.message
+						return error;
+					}
+				} else {
+					return 'no video'; // 没有找到视频元素
+				}
+                // if (videoElements.length > 0) {
+                //     for (let video of videoElements) {
+				// 		const sources = video.querySelectorAll('source');
+				// 		src = sources
+				// 		try{		
+				// 			await video.play();
+				// 			// console.log('play video normally');
+				// 			video.addEventListener('loadedmetadata', () => {
+				// 				durations.push(video.duration); // 将视频的时长添加到列表中
+				// 			});
+				// 		}catch(e){
+				// 			console.log('Error playing video:', e.message); 
+				// 			error = e.message;
+				// 		}
+                //     }
                     
-                }
-				return src
+                // }
+				// return src
                 // return videoElements.length;
             });
 			console.log(duration)
