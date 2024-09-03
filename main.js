@@ -245,7 +245,7 @@ async function video_site(page, website, hrefs, fs,numbers){
 				let error = null;
 				let src = null;
                 if (videoElements.length > 0) {
-					const sources = videoElement.querySelectorAll('source');
+					const sources = videoElements.querySelectorAll('source');
 					src = sources
                     for (let video of videoElements) {
 						try{		
