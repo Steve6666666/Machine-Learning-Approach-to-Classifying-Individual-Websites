@@ -352,13 +352,21 @@ async function video_site2(page, website, hrefs, fs,numbers){
 			console.log(elements.length)
 			for (const element of elements) {
 				console.log(element.x, element.y)
-				await page.mouse.move(element.x, element.y);
-				await page.mouse.click(element.x, element.y);
-				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
+				// await page.mouse.move(element.x, element.y);
+				// await page.mouse.click(element.x, element.y);
+				const [newPage] = await Promise.all([
+					new Promise(resolve => browser.once('targetcreated', async target => {
+						const newPage = await target.page();
+						resolve(newPage);
+					})),
+					page.mouse.click(element.x, element.y) // 这里是你要点击的位置，假设会打开新页面
+				]);
+
 				const temp = await page.evaluate(() => {
 					return document.querySelector('.css-weccem-DivAutoScrollButtonContainer').querySelector('path').getAttribute('d')
 				});
 				console.log(temp)
+				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
 				
 			}
 
