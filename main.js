@@ -412,24 +412,23 @@ async function youtube(page, website, hrefs, fs,numbers){
 			});
 			await page.waitForNavigation({ waitUntil: 'networkidle0' });
 			console.log('Search results page URL:', page.url());
-			const allLinks = Array.from(document.querySelectorAll('a'));
+			var allLinks = await page.evaluate(() => {
+				return Array.from(document.getElementsByTagName('a'), a => a.href);
+			});
 			for (let j = 0; j < allLinks.length; j++) {
 				await page.goto(allLinks[j], { 'timeout': LINK_TIMEOUT });
 				console.log('video url:',page.url())
 				await page.waitForTimeout(500000)
 			}
 			await page.waitForTimeout(50000)
-			var cur = await page.evaluate(() => {
-				return Array.from(document.getElementsByTagName('a'), a => a.href);
-			});
-			cur = shuffleArray(cur);
+			// cur = shuffleArray(cur);
 		} catch (e) {
 			console.log(e.message);
 		}
 	
-		if (hrefs.length < 20000) {
-			hrefs.push.apply(hrefs, cur);
-		}
+		// if (hrefs.length < 20000) {
+		// 	hrefs.push.apply(hrefs, cur);
+		// }
 		console.log(i + " " + hrefs[i]);
         var end = Date.now();
         const currentDate = new Date();
