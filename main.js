@@ -406,7 +406,7 @@ async function youtube(page, website, hrefs, fs,numbers){
 			await page.waitForSelector('input[name="search_query"]');
 			await page.type('input[name="search_query"]', 'Puppeteer 教程', { delay: 100 });
 			await page.waitForTimeout(1000)
-			await page.keyboard.press('Enter');
+			await page.click('#search-icon-legacy'); 
 			await page.waitForNavigation({ waitUntil: 'networkidle0' });
 			console.log('Search results page URL:', page.url());
 			const firstElementPosition = await page.evaluate(() => {
