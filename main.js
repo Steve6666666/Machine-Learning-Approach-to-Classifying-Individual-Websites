@@ -412,27 +412,12 @@ async function youtube(page, website, hrefs, fs,numbers){
 			});
 			await page.waitForNavigation({ waitUntil: 'networkidle0' });
 			console.log('Search results page URL:', page.url());
-			const firstElementPosition = await page.evaluate(() => {
-				const elements = document.querySelectorAll('.style-scope.ytd-rich-item-renderer');
-				if (elements.length > 0) {
-					const firstElement = elements[0]; // 获取第一个元素
-					const rect = firstElement.getBoundingClientRect(); // 获取元素位置和尺寸
-					return {
-						x: rect.x + rect.width / 2, // 元素的水平中心点
-						y: rect.y + rect.height / 2 // 元素的垂直中心点
-					};
-				}
-				return null;
-			});
-		
-			// 检查是否成功获取到坐标
-			if (firstElementPosition) {
-				// 点击该元素
-				await page.mouse.click(firstElementPosition.x, firstElementPosition.y);
-				console.log('Clicked on the first element.');
-			} else {
-				console.log('No elements found.');
-			}	
+			const allLinks = Array.from(document.querySelectorAll('a'));
+			for (let j = 0; j < allLinks.length; j++) {
+				await page.goto(allLinks[j], { 'timeout': LINK_TIMEOUT });
+				console.log('video url:',page.url())
+				await page.waitForTimeout(500000)
+			}
 			await page.waitForTimeout(50000)
 			var cur = await page.evaluate(() => {
 				return Array.from(document.getElementsByTagName('a'), a => a.href);
