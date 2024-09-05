@@ -402,9 +402,9 @@ async function youtube(page, website, hrefs, fs,numbers){
 		}
 		try {
 			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			// await page.waitForTimeout(5000)
-			await page.waitForSelector('#search'); 
-			await page.type('#search', 'Puppeteer 教程', { delay: 100 });
+			await page.waitForTimeout(5000)
+			await page.waitForSelector('input[name="search_query"]');
+			await page.type('input[name="search_query"]', 'Puppeteer 教程', { delay: 100 });
 			await page.keyboard.press('Enter');
 			await page.waitForNavigation({ waitUntil: 'networkidle0' });
 			console.log('Search results page URL:', page.url());
