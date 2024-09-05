@@ -402,7 +402,8 @@ async function youtube(page, website, hrefs, fs,numbers){
 		}
 		try {
 			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			await page.waitForTimeout(5000)
+			// await page.waitForTimeout(5000)
+			await page.waitForSelector('#search'); 
 			await page.type('#search', 'Puppeteer 教程', { delay: 100 });
 			await page.keyboard.press('Enter');
 			await page.waitForNavigation({ waitUntil: 'networkidle0' });
