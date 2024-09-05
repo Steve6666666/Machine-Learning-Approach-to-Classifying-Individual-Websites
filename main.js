@@ -417,10 +417,9 @@ async function youtube(page, website, hrefs, fs,numbers){
 			});
 			console.log(allLinks)
 			for (let j = 0; j < allLinks.length; j++) {
-				if (allLinks[i] == ' ' || allLinks[i].indexOf("//www.youtube.com") == -1 || allLinks[i].indexOf("pdf") > 1) {
+				if (allLinks[i] == ' ' || allLinks[i] == 'https://www.youtube.com'||allLinks[i] == ' ' || allLinks[i].indexOf("//www.youtube.com/watch") == -1 || allLinks[i].indexOf("pdf") > 1) {
 					continue;
 				}
-				console.log(allLinks[j])
 				await page.goto(allLinks[j], { 'timeout': LINK_TIMEOUT });
 				console.log('video url:',page.url())
 				await page.waitForTimeout(500000)
