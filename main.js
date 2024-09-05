@@ -423,6 +423,7 @@ async function youtube(page, website, hrefs, fs,numbers){
 				console.log('video url:',page.url())
 				await page.waitForSelector('.html5-video-player');
 				// 点击播放按钮以播放视频
+				await page.waitForTimeout(5000)
 				const isVideoPlaying = await page.evaluate(() => {
 					const videoPlayer = document.querySelector('.html5-video-player');
 					const playButton = videoPlayer.querySelector('.ytp-play-button');
