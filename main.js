@@ -99,7 +99,7 @@ async function crawl(page, website, login=false){
 	//await normal(page, website, hrefs, fs);
 	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	await video_site2(page, website, hrefs, fs, numbers);
+	await youtube(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
@@ -368,9 +368,7 @@ async function video_site2(page, website, hrefs, fs,numbers){
 				console.log(temp)
 				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
 				
-			}
-
-	
+			}	
 			var cur = await page.evaluate(() => {
 				return Array.from(document.getElementsByTagName('a'), a => a.href);
 			});
@@ -393,6 +391,64 @@ async function video_site2(page, website, hrefs, fs,numbers){
         });
 	}	
 }
+async function youtube(page, website, hrefs, fs,numbers){
+	for (let i = 0; i < hrefs.length; i++) {
+		var begin = Date.now();
+		if (hrefs[i] == '') {
+			continue;
+		}
+		if (hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
+			continue;
+		}
+		try {
+			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
+			await page.waitForTimeout(5000)
+			const firstElementPosition = await page.evaluate(() => {
+				const elements = document.querySelectorAll('.style-scope.ytd-rich-item-renderer');
+				if (elements.length > 0) {
+					const firstElement = elements[0]; // 获取第一个元素
+					const rect = firstElement.getBoundingClientRect(); // 获取元素位置和尺寸
+					return {
+						x: rect.x + rect.width / 2, // 元素的水平中心点
+						y: rect.y + rect.height / 2 // 元素的垂直中心点
+					};
+				}
+				return null;
+			});
+		
+			// 检查是否成功获取到坐标
+			if (firstElementPosition) {
+				// 点击该元素
+				await page.mouse.click(firstElementPosition.x, firstElementPosition.y);
+				console.log('Clicked on the first element.');
+			} else {
+				console.log('No elements found.');
+			}	
+			await page.waitForTimeout(50000)
+			var cur = await page.evaluate(() => {
+				return Array.from(document.getElementsByTagName('a'), a => a.href);
+			});
+			cur = shuffleArray(cur);
+		} catch (e) {
+			console.log(e.message);
+		}
+	
+		if (hrefs.length < 20000) {
+			hrefs.push.apply(hrefs, cur);
+		}
+		console.log(i + " " + hrefs[i]);
+        var end = Date.now();
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
+        fs.appendFile(`${website}_url.txt`, time, (err) => {
+            if (err) throw err;
+            console.log('The file has been saved!');
+        });
+	}	
+}
+
+
 
 async function moveMouseAndClick(page) {
     const images = await page.$$('img'); // 获取所有图片元素
