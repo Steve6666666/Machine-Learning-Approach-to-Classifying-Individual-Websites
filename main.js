@@ -402,7 +402,7 @@ async function youtube(page, website, hrefs, fs,numbers){
 		}
 		try {
 			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			await page.waitForTimeout(5000)
+			await page.waitForTimeout(8000)
 			const firstElementPosition = await page.evaluate(() => {
 				const elements = document.querySelectorAll('.style-scope.ytd-rich-item-renderer');
 				if (elements.length > 0) {

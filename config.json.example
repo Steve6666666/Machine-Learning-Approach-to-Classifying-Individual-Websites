@@ -118,5 +118,10 @@
         "home": "https://www.tiktok.com/",
         "email": "",
         "password": ""
+    },
+    "youtube": {
+        "home": "https://www.tiktok.com/",
+        "email": "",
+        "password": ""
     }
 }
