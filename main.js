@@ -415,9 +415,8 @@ async function youtube(page, website, hrefs, fs,numbers){
 			var allLinks = await page.evaluate(() => {
 				return Array.from(document.getElementsByTagName('a'), a => a.href);
 			});
-			console.log(allLinks)
 			for (let j = 0; j < allLinks.length; j++) {
-				if (allLinks[i] == ' ' || allLinks[i] == 'https://www.youtube.com'||allLinks[i] == ' ' || allLinks[i].indexOf("//www.youtube.com/watch") == -1 || allLinks[i].indexOf("pdf") > 1) {
+				if (allLinks[j] == ' ' || allLinks[j] == 'https://www.youtube.com'||allLinks[j] == ' ' || allLinks[j].indexOf("//www.youtube.com/watch") == -1 || allLinks[j].indexOf("pdf") > 1) {
 					continue;
 				}
 				await page.goto(allLinks[j], { 'timeout': LINK_TIMEOUT });
