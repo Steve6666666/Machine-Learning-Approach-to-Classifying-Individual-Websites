@@ -421,6 +421,22 @@ async function youtube(page, website, hrefs, fs,numbers){
 				}
 				await page.goto(allLinks[j], { 'timeout': LINK_TIMEOUT });
 				console.log('video url:',page.url())
+				await page.waitForSelector('.html5-video-player');
+				// 点击播放按钮以播放视频
+				const isVideoPlaying = await page.evaluate(() => {
+					const videoPlayer = document.querySelector('.html5-video-player');
+					const playButton = videoPlayer.querySelector('.ytp-play-button');
+					if (playButton && playButton.getAttribute('aria-label') === 'Play (k)') {
+						playButton.click();  // 如果视频没有播放，点击播放按钮
+						return true;
+					}
+					return false;
+				});
+				if (isVideoPlaying) {
+					console.log('Video was not playing, now playing...');
+				} else {
+					console.log('Video is already playing or failed to play.');
+				}
 				await page.waitForTimeout(500000)
 			}
 			await page.waitForTimeout(50000)
