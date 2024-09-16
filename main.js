@@ -439,7 +439,7 @@ async function youtube(page, website, hrefs, fs,numbers){
 				} else {
 					console.log('Video is already playing or failed to play.');
 				}
-				await page.waitForTimeout(500000)
+				await page.waitForTimeout(50000)
 			}
 			// await page.waitForTimeout(50000)
 			// cur = shuffleArray(cur);
