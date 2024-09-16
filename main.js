@@ -441,7 +441,7 @@ async function youtube(page, website, hrefs, fs,numbers){
 				}
 				await page.waitForTimeout(500000)
 			}
-			await page.waitForTimeout(50000)
+			// await page.waitForTimeout(50000)
 			// cur = shuffleArray(cur);
 		} catch (e) {
 			console.log(e.message);
