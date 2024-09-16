@@ -404,7 +404,29 @@ async function youtube(page, website, hrefs, fs,numbers){
 			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
 			await page.waitForTimeout(5000)
 			await page.waitForSelector('input[name="search_query"]');
-			await page.type('input[name="search_query"]', 'Puppeteer 教程', { delay: 100 });
+			const searchTerms = [
+				'Puppeteer 教程', 'JavaScript 教程', 'Node.js 入门', 'Python Web Scraping', '自动化测试工具', 'Selenium 教程', 'React.js 初学者指南', 
+				'Vue.js 实战项目', '机器学习入门', '深度学习基础', 'TensorFlow 教程', 'Kubernetes 实战', 'Docker 容器化应用', 'Git 教程', 
+				'Linux 命令行基础', '网络安全基础', '区块链技术', '智能合约开发', '前端开发框架', '后端开发技术', 'GraphQL 教程', 'REST API 设计', 
+				'WebSockets 实现', 'Django 教程', 'Flask 入门', 'Spring Boot 快速入门', 'Java 多线程编程', 'C++ 基础教程', 'Rust 编程入门', 
+				'Go 语言教程', 'PHP Web 开发', '数据库优化', 'MySQL 高级查询', 'PostgreSQL 数据库', 'MongoDB 入门', 'Redis 缓存', 
+				'Elasticsearch 搜索引擎', 'RabbitMQ 消息队列', 'Kafka 消息系统', '微服务架构', '分布式系统', '大数据处理', 'Hadoop 教程', 
+				'Spark 数据处理', '云计算基础', 'AWS 实战', 'Azure 云服务', 'Google Cloud 平台', 'DevOps 实践', 'CI/CD 持续集成', 
+				'Jenkins 自动化部署', 'Ansible 配置管理', 'Terraform 基础', '网络编程入门', 'HTML5 教程', 'CSS3 动画', 'Flexbox 布局', 
+				'CSS Grid 网格布局', 'Bootstrap 响应式设计', 'Sass 编译器', 'Tailwind CSS 框架', 'TypeScript 教程', 'Webpack 打包工具', 
+				'Babel 编译器', 'Node.js 事件驱动编程', 'Express.js 开发入门', 'RESTful API 设计', 'OAuth2 认证', 'JWT 认证与授权', 'WebAssembly 入门', 
+				'浏览器渲染原理', 'HTTP 协议基础', 'QUIC 协议', 'TCP/IP 网络协议', '面向对象编程', '函数式编程', '设计模式实践', '单元测试和集成测试', 
+				'测试驱动开发（TDD）', '版本控制系统', 'GitHub 工作流程', 'Bitbucket 使用', 'GitLab 持续集成', 'Agile 敏捷开发', 'Scrum 框架', 
+				'产品经理技能', '用户体验设计', 'UI/UX 设计工具', 'Figma 设计入门', 'Adobe XD 教程', '数据可视化工具', 'D3.js 可视化库', 
+				'Tableau 数据分析', 'Power BI 教程', '数据分析与建模', '统计学基础', 'R 语言数据分析', '机器学习算法', '监督学习和非监督学习', 
+				'强化学习入门', '自然语言处理（NLP）', '生成对抗网络（GAN）', '图像识别算法', '计算机视觉基础', 'OpenCV 教程', '迁移学习技术', 
+				'深度神经网络', '卷积神经网络（CNN）', '循环神经网络（RNN）', '集成学习方法', 'XGBoost 算法', '随机森林算法', '贝叶斯网络', 
+				'隐马尔可夫模型', '推荐系统算法', '大数据分析', '数据挖掘技术', '数据科学职业路径', '区块链开发', '智能合约编写', '比特币技术原理', 
+				'以太坊开发入门', 'NFT 开发'
+			];			
+			const randomSearchTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+
+			await page.type('input[name="search_query"]', randomSearchTerm, { delay: 100 });
 			await page.waitForTimeout(1000)
 			await page.evaluate(() => {
 				// 提交表单，相当于 document.querySelector('form').submit();
