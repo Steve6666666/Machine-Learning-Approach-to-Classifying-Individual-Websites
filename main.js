@@ -483,6 +483,84 @@ async function youtube(page, website, hrefs, fs,numbers){
         });
 	}	
 }
+async function yelp(page, website, hrefs, fs,numbers) {
+    const searchTerms = ['Restaurants', 'Coffee Shops', 'Bars'];  // 搜索关键词列表
+    const locations = ['San Francisco, CA', 'New York, NY'];      // 搜索地点列表
+    const targetContent = 'Pizza';                                // 要查找的目标内容
+
+    for (let i = 0; i < searchTerms.length; i++) {
+        for (let j = 0; j < locations.length; j++) {
+            var begin = Date.now();
+
+            try {
+                // 打开 Yelp 网站
+                await page.goto(website, { waitUntil: 'networkidle2' });
+                console.log(`Navigating to ${website} ...`);
+
+                // 输入搜索词
+                await page.waitForSelector('input[name="find_desc"]');
+                await page.type('input[name="find_desc"]', searchTerms[i], { delay: 100 });
+                console.log(`Entered search term: ${searchTerms[i]}`);
+
+                // 输入地点
+                await page.waitForSelector('input[name="find_loc"]');
+                await page.evaluate(() => document.querySelector('input[name="find_loc"]').value = ''); // 清空现有位置
+                await page.type('input[name="find_loc"]', locations[j], { delay: 100 });
+                console.log(`Entered location: ${locations[j]}`);
+
+                // 点击搜索按钮
+                await page.waitForSelector('button[type="submit"]');
+                await page.click('button[type="submit"]');
+                await page.waitForNavigation({ waitUntil: 'networkidle0' });
+                console.log(`Searching for ${searchTerms[i]} in ${locations[j]}...`);
+				console.log('cureent url:',page.url())
+                // 滚动页面寻找特定内容
+                let foundContent = false;
+                let scrollCount = 0;
+
+                // 循环滚动页面，直到找到目标内容或到底
+                while (!foundContent && scrollCount < 10) {  // 设置滚动次数限制，防止无限滚动
+                    foundContent = await page.evaluate((targetContent) => {
+                        const listings = Array.from(document.querySelectorAll('.container__09f24__21w3G'));
+                        for (const listing of listings) {
+                            if (listing.innerText.includes(targetContent)) {
+                                listing.scrollIntoView();
+                                listing.querySelector('a').click();
+                                return true; // 找到并点击目标内容
+                            }
+                        }
+                        return false; // 目标内容未找到
+                    }, targetContent);
+
+                    if (!foundContent) {
+                        console.log(`Scrolling down...`);
+                        await page.evaluate(() => window.scrollBy(0, window.innerHeight)); // 滚动一屏高度
+                        await page.waitForTimeout(2000); // 等待页面加载更多内容
+                        scrollCount++;
+                    }
+                }
+                // 如果找到目标内容，则等待页面加载
+                if (foundContent) {
+                    console.log(`Found and clicked the content: ${targetContent}`);
+                    await page.waitForNavigation({ waitUntil: 'networkidle0' });
+                } else {
+                    console.log(`Content "${targetContent}" not found in this search.`);
+                }
+            } catch (e) {
+                console.log(`Error during search for ${searchTerms[i]} in ${locations[j]}:`, e.message);
+            }
+            // 保存搜索时间和结果
+            var end = Date.now();
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+            var time = `time: ${(end - begin) / 1000} secs | search: ${searchTerms[i]} | location: ${locations[j]} | date: ${formattedDate}\n`;
+            fs.appendFile(`${website}_search_results.txt`, time, (err) => {
+                if (err) throw err;
+                console.log('The search result has been saved!');
+            });
+        }
+    }
+}
 
 
 
