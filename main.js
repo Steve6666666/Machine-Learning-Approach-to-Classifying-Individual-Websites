@@ -495,7 +495,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
 
             try {
                 // 打开 Yelp 网站
-                await page.goto(website, { waitUntil: 'networkidle2' });
+                await page.goto('https://www.yelp.com', { waitUntil: 'networkidle2' });
                 console.log(`Navigating to ${website} ...`);
 
                 // 输入搜索词
