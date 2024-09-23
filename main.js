@@ -99,7 +99,8 @@ async function crawl(page, website, login=false){
 	//await normal(page, website, hrefs, fs);
 	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	await youtube(page, website, hrefs, fs, numbers);
+	// await youtube(page, website, hrefs, fs, numbers);
+	await yelp(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
