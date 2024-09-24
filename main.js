@@ -522,7 +522,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
                 // 循环滚动页面，直到找到目标内容或到底
                 while (!foundContent && scrollCount < 10) {  // 设置滚动次数限制，防止无限滚动
                     foundContent = await page.evaluate((targetContent) => {
-                        const listings = Array.from(document.querySelectorAll('.container__09f24__21w3G'));
+                        const listings = Array.from(document.querySelectorAll('a.y-css-12ly5yx'));
                         for (const listing of listings) {
                             if (listing.innerText.includes(targetContent)) {
                                 listing.scrollIntoView();
@@ -538,7 +538,9 @@ async function yelp(page, website, hrefs, fs,numbers) {
                         await page.evaluate(() => window.scrollBy(0, window.innerHeight)); // 滚动一屏高度
                         await page.waitForTimeout(2000); // 等待页面加载更多内容
                         scrollCount++;
-                    }
+                    }else{
+						console.log(`find target`);
+					}
                 }
                 // 如果找到目标内容，则等待页面加载
                 if (foundContent) {
