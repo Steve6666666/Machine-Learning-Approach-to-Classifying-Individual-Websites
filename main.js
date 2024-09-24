@@ -526,7 +526,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
                         for (const listing of listings) {
                             if (listing.innerText.includes(targetContent)) {
                                 listing.scrollIntoView();
-                                listing.querySelector('a').click();
+                                listing.click();
                                 return true; // 找到并点击目标内容
                             }
                         }
