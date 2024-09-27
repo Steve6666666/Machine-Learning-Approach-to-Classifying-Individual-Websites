@@ -532,7 +532,8 @@ async function yelp(page, website, hrefs, fs,numbers) {
                         }
                         return false; // 目标内容未找到
                     }, targetContent);
-
+					console.log(targetContent)
+					
                     if (!foundContent) {
                         console.log(`Scrolling down...`);
                         await page.evaluate(() => window.scrollBy(0, window.innerHeight)); // 滚动一屏高度
@@ -564,7 +565,6 @@ async function yelp(page, website, hrefs, fs,numbers) {
         }
     }
 }
-
 
 
 async function moveMouseAndClick(page) {
@@ -626,6 +626,109 @@ async function e_commerce_site(page, website, hrefs, fs, numbers) {
         });
     }
 }
+
+async function apple(page, website, hrefs, fs, numbers) {
+    const items = ['MacBook', 'iPad', 'iPhone', 'VisionPro', 'AirPods']; // 要搜索的产品
+    const searchInputSelector = 'input[name="search"]'; // 搜索框的选择器
+    const productModelSelector = '.as-producttile-tilehero a'; // 产品模型的选择器
+    const specOptionSelector = '.option-button'; // 规格选择器
+    const addToCartButtonSelector = '.button-continue'; // 加入购物车按钮选择器
+    const targetLocation = 'New Jersey'; // Apple Store 查询
+
+    for (let i = 0; i < items.length; i++) {
+        try {
+            // 打开 Apple 网站
+            await page.goto(website, { waitUntil: 'networkidle2' });
+
+            // 搜索产品
+            await page.waitForSelector(searchInputSelector);
+            await page.type(searchInputSelector, items[i], { delay: 100 });
+            await page.keyboard.press('Enter');
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+            // 查找并选择该产品的模型
+            await page.waitForSelector(productModelSelector);
+            const models = await page.$$(productModelSelector);
+
+            if (models.length > 0) {
+                await models[0].click(); // 选择第一个模型
+                await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+                // 选择产品规格
+                await page.waitForSelector(specOptionSelector);
+                const specOptions = await page.$$(specOptionSelector);
+                if (specOptions.length > 0) {
+                    await specOptions[0].click(); // 选择第一个规格
+                }
+
+                // 添加到购物车
+                const addToCartButton = await page.$(addToCartButtonSelector);
+                if (addToCartButton) {
+                    await addToCartButton.click();
+                    console.log(`${items[i]} added to cart.`);
+                } else {
+                    console.log(`Add to cart button not found for ${items[i]}`);
+                }
+            }
+        } catch (err) {
+            console.log(`Error processing ${items[i]}:`, err);
+        }
+    }
+
+    // 第二步：搜索 New Jersey 并查看任意 Apple Store
+    try {
+        await page.goto(website, { waitUntil: 'networkidle2' });
+        await page.waitForSelector(searchInputSelector);
+        await page.type(searchInputSelector, targetLocation, { delay: 100 });
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+        // 查找 Apple Store 链接并点击
+        const storeLinkSelector = 'a[href*="store"]';
+        const storeLinks = await page.$$(storeLinkSelector);
+
+        if (storeLinks.length > 0) {
+            await storeLinks[0].click();
+            console.log('Opened Apple Store in New Jersey.');
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        }
+    } catch (err) {
+        console.log('Error searching for Apple store in New Jersey:', err);
+    }
+
+    // 第三步和第四步：搜索任意产品并浏览不同服务和功能
+    try {
+        await page.goto(website, { waitUntil: 'networkidle2' });
+        await page.waitForSelector(searchInputSelector);
+        await page.type(searchInputSelector, 'iMac', { delay: 100 });
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+        // 浏览服务和功能
+        const servicesSelector = 'a[href*="services"]'; // 假设存在服务链接
+        const serviceLinks = await page.$$(servicesSelector);
+
+        if (serviceLinks.length > 0) {
+            await serviceLinks[0].click();
+            console.log('Exploring different services and aspects.');
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        }
+    } catch (err) {
+        console.log('Error during product search or exploring services:', err);
+    }
+
+    // 第五步：记录时间和结果
+    const end = Date.now();
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
+    const timeLog = `time: ${(end - start) / 1000} secs | products searched: ${items.join(', ')} | date: ${formattedDate}\n`;
+    
+    fs.appendFile(`${website}_search_results.txt`, timeLog, (err) => {
+        if (err) throw err;
+        console.log('Search results have been saved!');
+    });
+}
+
 
 
 
