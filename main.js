@@ -485,9 +485,9 @@ async function youtube(page, website, hrefs, fs,numbers){
 	}	
 }
 async function yelp(page, website, hrefs, fs,numbers) {
-    const searchTerms = ['Restaurants', 'Coffee Shops', 'Bars'];  // 搜索关键词列表
+    const searchTerms = ['pizza', 'Coffee Shops', 'Bars'];  // 搜索关键词列表
     const locations = ['San Francisco, CA', 'New York, NY'];      // 搜索地点列表
-    const targetContent = 'Pizza';                                // 要查找的目标内容
+    const targetContents = ['pizza', 'Coffee', 'Bars'];                                // 要查找的目标内容
 
     for (let i = 0; i < searchTerms.length; i++) {
         for (let j = 0; j < locations.length; j++) {
@@ -518,7 +518,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
                 // 滚动页面寻找特定内容
                 let foundContent = false;
                 let scrollCount = 0;
-
+				targetContent = targetContents[i]
                 // 循环滚动页面，直到找到目标内容或到底
                 while (!foundContent && scrollCount < 10) {  // 设置滚动次数限制，防止无限滚动
                     foundContent = await page.evaluate((targetContent) => {
