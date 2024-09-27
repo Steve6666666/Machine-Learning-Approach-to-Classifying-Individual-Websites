@@ -520,7 +520,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
                 let scrollCount = 0;
 				targetContent = targetContents[i]
                 // 循环滚动页面，直到找到目标内容或到底
-                while (!foundContent && scrollCount < 10) {  // 设置滚动次数限制，防止无限滚动
+                while (!foundContent && scrollCount < 12) {  // 设置滚动次数限制，防止无限滚动
                     foundContent = await page.evaluate((targetContent) => {
                         const listings = Array.from(document.querySelectorAll('a.y-css-12ly5yx'));
                         for (const listing of listings) {
