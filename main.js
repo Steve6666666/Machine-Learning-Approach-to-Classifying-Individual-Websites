@@ -538,8 +538,9 @@ async function yelp(page, website, hrefs, fs,numbers) {
                         }
                         return false; // 目标内容未找到
                     }, targetContent);
-					console.log(targetContent)
-					console.log(foundContent)
+					// console.log(targetContent)
+					// console.log(foundContent)
+					console.log('cureent url:',page.url())
                     if (!foundContent) {
                         console.log(`Scrolling down...`);
                         await page.evaluate(() => window.scrollBy(0, window.innerHeight)); // 滚动一屏高度
