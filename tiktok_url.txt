@@ -1,0 +1,5 @@
+time:6.02secs link:https://www.tiktok.com/ Date:2024-10-02_18:35:04
+time:6.407secs link:https://www.tiktok.com/en Date:2024-10-02_18:35:10
+time:6.821secs link:https://www.tiktok.com/explore Date:2024-10-02_18:35:17
+time:6.507secs link:https://www.tiktok.com/following Date:2024-10-02_18:35:23
+time:6.574secs link:https://www.tiktok.com/live Date:2024-10-02_18:35:30

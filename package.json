@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/Steve6666666/CS552#readme",
   "dependencies": {
-    "puppeteer": "^19.2.0"
+    "puppeteer": "^19.2.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }

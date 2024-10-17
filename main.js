@@ -64,7 +64,12 @@ async function userInput(question){
 async function puppeteerInit(){
 	const args = puppeteer.defaultArgs().filter(arg => arg !== '--enable-asm-webassembly');
 	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer' , '--disable-quic','--disable-features=NetworkService,NetworkServiceInProcess');
-	const browser = await puppeteer.launch({ ignoreDefaultArgs: true, args });
+	const browser = await puppeteer.launch({ 
+		headless: false, 
+		executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+		// ignoreDefaultArgs: true,
+		// args 
+		});
 	const page = await browser.newPage();
 	await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36');
 	return [browser, page];
@@ -102,8 +107,10 @@ async function crawl(page, website, login=false){
 	//await normal(page, website, hrefs, fs);
 	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	// await youtube(page, website, hrefs, fs, numbers);
-	await yelp(page, website, hrefs, fs, numbers);
+	await youtube(page, website, hrefs, fs, numbers);
+	// await yelp(page, website, hrefs, fs, numbers);
+	// await tiktok2(page, website, hrefs, fs, numbers);
+	// await amazon(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
@@ -123,7 +130,6 @@ async function crawl(page, website, login=false){
 	// 	} catch(e){
 	// 		console.log(e.message);
 	// 	}
-
 	// 	if(hrefs.length < 20000){
 	// 		hrefs.push.apply(hrefs, cur);
 	// 	}/*else{
@@ -230,7 +236,7 @@ async function normal(page, website, hrefs, fs) {
                		 });
 	}
 }
-async function video_site(page, website, hrefs, fs,numbers){
+async function tiktok(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
         var begin = Date.now();
         if (hrefs[i] == '' || hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
@@ -333,7 +339,7 @@ async function video_site(page, website, hrefs, fs,numbers){
         });
     }
 }
-async function video_site2(page, website, hrefs, fs,numbers){
+async function tiktok2(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
 		var begin = Date.now();
 		if (hrefs[i] == '') {
@@ -491,7 +497,6 @@ async function yelp(page, website, hrefs, fs,numbers) {
     const searchTerms = ['pizza', 'Coffee Shops', 'Bars'];  // 搜索关键词列表
     const locations = ['San Francisco, CA', 'New York, NY'];      // 搜索地点列表
     const targetContents = ['pizza', 'Coffee', 'Bars'];                                // 要查找的目标内容
-
     for (let i = 0; i < searchTerms.length; i++) {
         for (let j = 0; j < locations.length; j++) {
             var begin = Date.now();
@@ -501,16 +506,21 @@ async function yelp(page, website, hrefs, fs,numbers) {
                 await page.goto('https://www.yelp.com', { waitUntil: 'networkidle2' });
                 console.log(`Navigating to ${website} ...`);
 
+				await page.waitForTimeout(Math.random() * 2000 + 1000);
                 // 输入搜索词
                 await page.waitForSelector('input[name="find_desc"]');
-                await page.type('input[name="find_desc"]', searchTerms[i], { delay: 100 });
+                await page.type('input[name="find_desc"]', searchTerms[i], { delay: Math.random() * 200 + 100 });
                 console.log(`Entered search term: ${searchTerms[i]}`);
+
+				await page.waitForTimeout(Math.random() * 2000 + 1000);
 
                 // 输入地点
                 await page.waitForSelector('input[name="find_loc"]');
                 await page.evaluate(() => document.querySelector('input[name="find_loc"]').value = ''); // 清空现有位置
-                await page.type('input[name="find_loc"]', locations[j], { delay: 100 });
+                await page.type('input[name="find_loc"]', locations[j], { delay: Math.random() * 200 + 100 });
                 console.log(`Entered location: ${locations[j]}`);
+
+				await page.waitForTimeout(Math.random() * 2000 + 1000);
 
                 // 点击搜索按钮
                 await page.waitForSelector('button[type="submit"]');
@@ -525,6 +535,7 @@ async function yelp(page, website, hrefs, fs,numbers) {
 				page.on('console', msg => {
 					console.log('页面日志:', msg.text());
 				});
+				await page.waitForTimeout(5000); 
                 // 循环滚动页面，直到找到目标内容或到底
                 while (!foundContent && scrollCount < 12) {  // 设置滚动次数限制，防止无限滚动
                     foundContent = await page.evaluate((targetContent) => {
@@ -735,6 +746,100 @@ async function apple(page, website, hrefs, fs, numbers) {
         if (err) throw err;
         console.log('Search results have been saved!');
     });
+}
+async function amazon(page, website, hrefs, fs, numbers) {
+    const items = ['Heater', 'Vitamin C', 'Swivel Fan', 'Hair Brush', 'Clothes']; // 要搜索的物品列表
+
+    for (const item of items) {
+        try {
+            // 打开 Amazon 网站
+            await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
+
+            // 搜索产品
+            await page.waitForSelector('input[name="field-keywords"]');
+            await page.type('input[name="field-keywords"]', item, { delay: 100 });
+            await page.keyboard.press('Enter');
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+            // 选择第一个产品
+            const firstProductSelector = '.s-main-slot .s-result-item h2 a';
+            await page.waitForSelector(firstProductSelector);
+            const firstProduct = await page.$(firstProductSelector);
+            await firstProduct.click();
+            await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+            // 检查价格
+            const priceSelector = '#priceblock_ourprice, #priceblock_dealprice';
+            await page.waitForSelector(priceSelector);
+            const price = await page.$eval(priceSelector, el => el.innerText);
+            console.log(`Price for ${item}: ${price}`);
+
+            // 浏览评论和图片
+            const reviewsSelector = '#acrCustomerReviewText';
+            const imagesSelector = '#altImages img';
+            const reviews = await page.$eval(reviewsSelector, el => el.innerText);
+            const imageCount = await page.$$eval(imagesSelector, imgs => imgs.length);
+            console.log(`Reviews: ${reviews}`);
+            console.log(`Number of images: ${imageCount}`);
+
+            // 选择规格 (如果有)
+            const specOptionsSelector = '.a-button-inner';
+            const specOptions = await page.$$(specOptionsSelector);
+            if (specOptions.length > 0) {
+                await specOptions[0].click();  // 选择第一个规格
+                await page.waitForTimeout(1000);  // 等待选择后更新
+            }
+
+            // 将产品加入购物车
+            const addToCartButtonSelector = '#add-to-cart-button';
+            await page.waitForSelector(addToCartButtonSelector);
+            await page.click(addToCartButtonSelector);
+            console.log(`${item} added to cart.`);
+        } catch (err) {
+            console.log(`Error processing ${item}:`, err);
+        }
+    }
+
+    // 第二部分：进入 Amazon Prime Video 并观看视频
+    try {
+        await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
+        await page.click('#nav-link-prime');  // 点击 Prime 按钮
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+        // 选择视频
+        const videoSelector = '.bxc-grid__image a';
+        await page.waitForSelector(videoSelector);
+        await page.click(videoSelector);
+
+        // 等待 10 分钟观看视频
+        console.log('Watching a video for 10 minutes...');
+        await page.waitForTimeout(10 * 60 * 1000);  // 10 分钟
+    } catch (err) {
+        console.log('Error during Amazon Prime Video process:', err);
+    }
+
+    // 第三部分：搜索任意其他产品并加入购物车
+    try {
+        await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
+        await page.type('input[name="field-keywords"]', 'Laptop', { delay: 100 });
+        await page.keyboard.press('Enter');
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+        // 选择第一个产品并加入购物车
+        const firstProductSelector = '.s-main-slot .s-result-item h2 a';
+        await page.waitForSelector(firstProductSelector);
+        const firstProduct = await page.$(firstProductSelector);
+        await firstProduct.click();
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+
+        // 将产品加入购物车
+        const addToCartButtonSelector = '#add-to-cart-button';
+        await page.waitForSelector(addToCartButtonSelector);
+        await page.click(addToCartButtonSelector);
+        console.log('Laptop added to cart.');
+    } catch (err) {
+        console.log('Error during product search and add to cart:', err);
+    }
 }
 
 

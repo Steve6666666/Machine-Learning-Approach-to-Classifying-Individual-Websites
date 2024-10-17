@@ -1,0 +1,6 @@
+time: 3.824 secs | search: pizza | location: San Francisco, CA | date: 2024-10-01_18:19:29
+time: 0 secs | search: pizza | location: New York, NY | date: 2024-10-01_18:19:29
+time: 0 secs | search: Coffee Shops | location: New York, NY | date: 2024-10-01_18:19:29
+time: 0 secs | search: Coffee Shops | location: San Francisco, CA | date: 2024-10-01_18:19:29
+time: 0 secs | search: Bars | location: New York, NY | date: 2024-10-01_18:19:29
+time: 0 secs | search: Bars | location: San Francisco, CA | date: 2024-10-01_18:19:29
