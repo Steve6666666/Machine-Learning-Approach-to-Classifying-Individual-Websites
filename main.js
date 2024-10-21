@@ -107,9 +107,9 @@ async function crawl(page, website, login=false){
 	//await normal(page, website, hrefs, fs);
 	// await video_site2(page, website, hrefs, fs);
 	const numbers = await readNumbersFromFile('tiktok.txt');
-	await youtube(page, website, hrefs, fs, numbers);
+	// await youtube(page, website, hrefs, fs, numbers);
 	// await yelp(page, website, hrefs, fs, numbers);
-	// await tiktok2(page, website, hrefs, fs, numbers);
+	await tiktok2(page, website, hrefs, fs, numbers);
 	// await amazon(page, website, hrefs, fs, numbers);
 
 	// for(let i = 0; i < hrefs.length; i++){
@@ -277,46 +277,9 @@ async function tiktok(page, website, hrefs, fs,numbers){
 				} else {
 					return 'no video'; // 没有找到视频元素
 				}
-                // if (videoElements.length > 0) {
-                //     for (let video of videoElements) {
-				// 		const sources = video.querySelectorAll('source');
-				// 		src = sources
-				// 		try{		
-				// 			await video.play();
-				// 			// console.log('play video normally');
-				// 			video.addEventListener('loadedmetadata', () => {
-				// 				durations.push(video.duration); // 将视频的时长添加到列表中
-				// 			});
-				// 		}catch(e){
-				// 			console.log('Error playing video:', e.message); 
-				// 			error = e.message;
-				// 		}
-                //     }
-                    
-                // }
-				// return src
-                // return videoElements.length;
+               
             });
 			console.log(duration)
-            // if (hasVideo) {
-			// 	const videoDuration = await page.evaluate(() => {
-            //         const videoElements = document.getElementsByTagName('video');
-            //         if (videoElements.length > 0) {
-			// 			print('-------',videoElements.length, videoElements[0].duration)
-            //             return videoElements[0].duration;
-            //         }
-            //         return 0;
-            //     });
-
-
-            //     // 从数字列表中随机选择一个时间
-            //     const randomTime = getRandomSample(numbers);
-			// 	const waitTime = Math.min(videoDuration * 1000, 3*randomTime);
-            //     // Wait for a certain time to simulate watching the video
-			// 	console.log('time spend on this video:',waitTime)
-            //     await page.waitForTimeout(randomTime*1000); // 使用随机选取的时间
-            // }
-
             var cur = await page.evaluate(() => {
                 return Array.from(document.getElementsByTagName('a'), a => a.href);
             });
@@ -339,68 +302,76 @@ async function tiktok(page, website, hrefs, fs,numbers){
         });
     }
 }
-async function tiktok2(page, website, hrefs, fs,numbers){
-	for (let i = 0; i < hrefs.length; i++) {
-		var begin = Date.now();
-		if (hrefs[i] == '') {
-			continue;
-		}
-		if (hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
-			continue;
-		}
-		try {
-			await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-			await page.waitForTimeout(5000);
+async function tiktok2(page, website, fs, numbers) {
+    try {
+        // 访问 TikTok 网站主页
+        await page.goto('https://www.tiktok.com', { waitUntil: 'networkidle2' });
+        await page.waitForTimeout(5000);  // 等待页面加载完成
 
-			const elements = await page.evaluate(() => {
-				// 使用属性选择器查找具有 playsinline 属性的元素
-				return Array.from(document.querySelectorAll('video[playsinline]')).map(el => {
-					const { x, y, width, height } = el.getBoundingClientRect();
-					return { x: x + width / 2, y: y + height / 2 }; // 返回每个元素的中心点坐标
-				});
-			});
-			console.log(elements.length)
-			for (const element of elements) {
-				console.log(element.x, element.y)
-				// await page.mouse.move(element.x, element.y);
-				await page.mouse.click(element.x, element.y);
-				// const [newPage] = await Promise.all([
-				// 	new Promise(resolve => browser.once('targetcreated', async target => {
-				// 		const newPage = await target.page();
-				// 		resolve(newPage);
-				// 	})),
-				// 	page.mouse.click(element.x, element.y) // 这里是你要点击的位置，假设会打开新页面
-				// ]);
-				await page.waitForTimeout(5000);
-				const temp = await page.evaluate(() => {
-					return document.querySelector('.css-weccem-DivAutoScrollButtonContainer').querySelector('path').getAttribute('d')
-				});
-				console.log(temp)
-				await page.waitForTimeout(20000); // 停留 1 秒，让元素有时间播放
-				
-			}	
-			var cur = await page.evaluate(() => {
-				return Array.from(document.getElementsByTagName('a'), a => a.href);
-			});
-			cur = shuffleArray(cur);
-		} catch (e) {
-			console.log(e.message);
-		}
-	
-		if (hrefs.length < 20000) {
-			hrefs.push.apply(hrefs, cur);
-		}
-		console.log(i + " " + hrefs[i]);
-        var end = Date.now();
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
-        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
-        fs.appendFile(`${website}_url.txt`, time, (err) => {
-            if (err) throw err;
-            console.log('The file has been saved!');
+        console.log('Visited TikTok homepage.');
+
+        // 确保自动播放模式开启
+        const isAutoPlayEnabled = await page.evaluate(() => {
+            const autoplayButton = document.querySelector('.css-weccem-DivAutoScrollButtonContainer');
+            if (autoplayButton) {
+                autoplayButton.click();  // 点击开启连播模式
+                return true;
+            }
+            return false;
         });
-	}	
+        if (isAutoPlayEnabled) {
+            console.log('Autoplay mode enabled.');
+        } else {
+            console.log('Autoplay mode not found or already enabled.');
+        }
+
+        // 无限循环模拟观看 TikTok 视频
+        while (true) {
+            // 查找带有 playsinline 属性的视频，并点击播放
+            const videoElement = await page.evaluate(() => {
+                const video = document.querySelector('video[playsinline]');
+                if (video) {
+                    const { x, y, width, height } = video.getBoundingClientRect();
+                    return { x: x + width / 2, y: y + height / 2 };  // 返回视频中心点的坐标
+                }
+                return null;
+            });
+
+            if (videoElement) {
+                console.log(`Clicking video at (${videoElement.x}, ${videoElement.y})`);
+                // await page.mouse.click(videoElement.x, videoElement.y);  // 点击视频中心点
+                await page.waitForTimeout(2000);  // 等待视频开始播放
+
+                // 生成随机观看时间
+                const randomWatchTime = Math.floor(Math.random() * (60000 - 30000 + 1)) + 30000;  // 随机 30-60 秒
+                console.log(`Watching video for ${randomWatchTime / 1000} seconds...`);
+
+                // 等待随机的观看时间
+                await page.waitForTimeout(randomWatchTime);
+
+                // 模拟按键“下箭头”，切换到下一个视频
+                console.log('Pressing down arrow key to go to next video...');
+                await page.keyboard.press('ArrowDown');  // 按下键切换到下一个视频
+
+                // 等待几秒，以确保页面完成加载
+                await page.waitForTimeout(5000);  
+            } else {
+                console.log('No video found on the page. Scrolling to try again...');
+                // 如果找不到视频，尝试滚动页面以找到下一个视频
+                await page.evaluate(() => window.scrollBy(0, window.innerHeight));  // 滚动一屏
+                await page.waitForTimeout(3000);  // 等待页面加载
+            }
+        }
+    } catch (e) {
+        console.log(`Error while browsing TikTok: ${e.message}`);
+    }
+
+    console.log('Finished browsing TikTok.');
 }
+
+
+
+
 async function youtube(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
 		var begin = Date.now();
