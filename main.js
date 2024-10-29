@@ -63,12 +63,10 @@ async function userInput(question){
 
 async function puppeteerInit(){
 	const args = puppeteer.defaultArgs().filter(arg => arg !== '--enable-asm-webassembly');
-	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer' , '--disable-quic','--disable-features=NetworkService,NetworkServiceInProcess');
+	args.push('--enable-webgl-draft-extensions', '--shared-array-buffer' , '--disable-quic','--disable-features=NetworkService,NetworkServiceInProcess','--disable-infobars');
 	const browser = await puppeteer.launch({ 
 		headless: false, 
 		executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-		// ignoreDefaultArgs: true,
-		// args 
 		});
 	const page = await browser.newPage();
 	await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3419.0 Safari/537.36');
@@ -81,7 +79,7 @@ async function puppeteerInit(){
  * @param {String} website - website name
  * @param {Boolean} login - use login if true
  */
-async function crawl(page, website, login=false){
+async function crawl(page, website, browser,login=false){
 	const fs = require('fs');
 	const home = config[website].home;
 	const email = config[website].email;
@@ -109,8 +107,10 @@ async function crawl(page, website, login=false){
 	const numbers = await readNumbersFromFile('tiktok.txt');
 	// await youtube(page, website, hrefs, fs, numbers);
 	// await yelp(page, website, hrefs, fs, numbers);
-	await tiktok2(page, website, hrefs, fs, numbers);
+	// await tiktok2(page, website, hrefs, fs, numbers);
 	// await amazon(page, website, hrefs, fs, numbers);
+	// await apple(page, website);
+	await bilibili(page, website,browser);
 
 	// for(let i = 0; i < hrefs.length; i++){
 	// 	var begin=Date.now();
@@ -189,53 +189,6 @@ function getRandomSample(arr) {
     return arr[index];
 }
 
-
-
-async function normal(page, website, hrefs, fs) {
-	for(let i = 0; i < hrefs.length; i++){
-		var begin=Date.now();
-		if(hrefs[i] == ''){
-			continue
-		}
-		if(hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1){
-			continue;
-		}
-		try{
-			await page.goto(hrefs[i], {'timeout': LINK_TIMEOUT});
-			//await page.goBack();
-			var cur=await page.evaluate(() => {
-				return Array.from(document.getElementsByTagName('a'), a => a.href);
-			});
-			cur= shuffleArray(cur)
-		} catch(e){
-			console.log(e.message);
-		}
-
-		if(hrefs.length < 20000){
-			hrefs.push.apply(hrefs, cur);
-		}/*else{
-			const fs = require('fs');
-			for(let i =0;i<hrefs.length;i++){
-				fs.writeFile('./target.txt',hrefs[i],function (err,data) {
-					if (err) {
-						return console.log(err);
-					}
-					console.log(data);
-				});
-			}
-		}*/
-		console.log(i + " " + hrefs[i]);
-		var end = Date.now();
-		const currentDate = new Date();
-                		const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
-                		var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ " Date:"+ formattedDate  + "\n";
-                		//var time="time:"+(end-begin)/1000 +"secs link:"+hrefs[i]+ "\n";
-                		fs.appendFile(`${website}_url.txt`, time, (err) => {
-                        		if (err) throw err;
-                        		console.log('The file has been saved!');
-               		 });
-	}
-}
 async function tiktok(page, website, hrefs, fs,numbers){
 	for (let i = 0; i < hrefs.length; i++) {
         var begin = Date.now();
@@ -575,243 +528,210 @@ async function moveMouseAndClick(page) {
         }
     }
 }
-// 重写 processLinks 函数
-async function e_commerce_site(page, website, hrefs, fs, numbers) {
-    for (let i = 0; i < hrefs.length; i++) {
-        if (hrefs[i] == '' || hrefs[i] == ' ' || hrefs[i].indexOf("//www." + website + ".com") == -1 || hrefs[i].indexOf("pdf") > 1) {
-            continue;
-        }
-        try {
-            await page.goto(hrefs[i], { 'timeout': LINK_TIMEOUT });
-            
-            // 模拟鼠标移动和点击图片
-            await moveMouseAndClick(page);
 
-            // 随机等待时间
-            const randomTime = getRandomSample(numbers);
-            if (randomTime !== undefined && !isNaN(randomTime)) {
-                await page.waitForTimeout(randomTime*1000); // 使用随机选取的时间
-            }
 
-            // 提取页面中的所有链接
-            var cur = await page.evaluate(() => {
-                return Array.from(document.getElementsByTagName('a'), a => a.href);
-            });
-            cur = shuffleArray(cur);
-        } catch (e) {
-            console.log(e.message);
-        }
-
-        if (hrefs.length < 20000) {
-            hrefs.push.apply(hrefs, cur);
-        }
-        console.log(i + " " + hrefs[i]);
-        var end = Date.now();
-        const currentDate = new Date();
-        const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
-        var time = "time:" + (end - begin) / 1000 + "secs link:" + hrefs[i] + " Date:" + formattedDate + "\n";
-        fs.appendFile(`${website}.txt`, time, (err) => {
-            if (err) throw err;
-            console.log('The file has been saved!');
-        });
-    }
+// 生成随机延迟时间函数，范围在 min 到 max 毫秒之间
+function getRandomDelay(min = 1000, max = 3000) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function apple(page, website, hrefs, fs, numbers) {
-    const items = ['MacBook', 'iPad', 'iPhone', 'VisionPro', 'AirPods']; // 要搜索的产品
-    const searchInputSelector = 'input[name="search"]'; // 搜索框的选择器
-    const productModelSelector = '.as-producttile-tilehero a'; // 产品模型的选择器
-    const specOptionSelector = '.option-button'; // 规格选择器
-    const addToCartButtonSelector = '.button-continue'; // 加入购物车按钮选择器
-    const targetLocation = 'New Jersey'; // Apple Store 查询
+// 随机选择数组中的一个元素
+function getRandomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+async function apple(page, website) {
+    const items = ['MacBook', 'iPad', 'iPhone', 'VisionPro', 'AirPods']; // 要搜索的设备列表
+    const searchButtonSelector = '#globalnav-menubutton-link-search';  // 搜索按钮的选择器
+    const searchInputSelector = '.globalnav-searchfield-input';  // 搜索框选择器
+    const addToCartSelector = '.add-to-cart';  // 假设这是“加入购物车”按钮的选择器
+    const specificationsSelector = '.product-specs';  // 假设是规格选择器
 
-    for (let i = 0; i < items.length; i++) {
-        try {
+    try {
+        const startTime = Date.now();  // 开始时间
+        const browseDuration = 20 * 60 * 1000;  // 设定的浏览时长（20分钟）
+        
+        while (Date.now() - startTime < browseDuration) {
+            const item = getRandomItem(items);  // 随机选择设备进行浏览
+
             // 打开 Apple 网站
-            await page.goto(website, { waitUntil: 'networkidle2' });
+            await page.goto('https://www.apple.com/', { waitUntil: 'networkidle2' });
+            await page.waitForTimeout(getRandomDelay());  // 随机等待
 
-            // 搜索产品
-            await page.waitForSelector(searchInputSelector);
-            await page.type(searchInputSelector, items[i], { delay: 100 });
+            // 点击搜索按钮，显示搜索输入框
+            console.log(`Searching for: ${item}`);
+            await page.waitForSelector(searchButtonSelector, { visible: true });
+            await page.click(searchButtonSelector);  // 点击搜索按钮
+            await page.waitForTimeout(getRandomDelay());  // 等待搜索输入框的出现
+
+            // 输入框出现后，输入设备名称
+            await page.waitForSelector(searchInputSelector, { visible: true });
+            await page.type(searchInputSelector, item, { delay: getRandomDelay(100, 200) });  // 随机延迟输入
+            console.log(`Typed: ${item}`);
+
+            // 提交搜索并等待页面加载
             await page.keyboard.press('Enter');
             await page.waitForNavigation({ waitUntil: 'networkidle0' });
+            await page.waitForTimeout(getRandomDelay());  // 随机等待
 
-            // 查找并选择该产品的模型
-            await page.waitForSelector(productModelSelector);
-            const models = await page.$$(productModelSelector);
+            // 随机滚动页面并选择设备
+            console.log("Randomly scrolling the page to select a product...");
+            await page.evaluate(() => {
+                window.scrollBy(0, Math.floor(Math.random() * 400));  // 随机滚动 400 像素
+            });
 
-            if (models.length > 0) {
-                await models[0].click(); // 选择第一个模型
+            await page.waitForTimeout(getRandomDelay());
+			await page.waitForTimeout(5000000); 
+
+            // 获取所有可点击的产品链接
+            const productLinks = await page.evaluate(() => {
+                const products = Array.from(document.querySelectorAll('.rf-serp-productoption-link'));
+                return products.map(product => ({
+                    href: product.href,
+                    text: product.innerText,
+                    x: product.getBoundingClientRect().x,
+                    y: product.getBoundingClientRect().y
+                }));
+            });
+
+            if (productLinks.length > 0) {
+                // 随机选择一个产品并点击
+                const selectedProduct = getRandomItem(productLinks);
+                console.log(`Selected product: ${selectedProduct.text}`);
+                await page.mouse.move(selectedProduct.x, selectedProduct.y);  // 移动鼠标到产品位置
+                await page.mouse.click(selectedProduct.x, selectedProduct.y);  // 点击产品
                 await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-                // 选择产品规格
-                await page.waitForSelector(specOptionSelector);
-                const specOptions = await page.$$(specOptionSelector);
-                if (specOptions.length > 0) {
-                    await specOptions[0].click(); // 选择第一个规格
-                }
-
-                // 添加到购物车
-                const addToCartButton = await page.$(addToCartButtonSelector);
-                if (addToCartButton) {
-                    await addToCartButton.click();
-                    console.log(`${items[i]} added to cart.`);
-                } else {
-                    console.log(`Add to cart button not found for ${items[i]}`);
-                }
+            } else {
+                console.log("No products found on the page.");
+                continue;  // 如果没有找到产品，则重新执行循环
             }
-        } catch (err) {
-            console.log(`Error processing ${items[i]}:`, err);
-        }
-    }
 
-    // 第二步：搜索 New Jersey 并查看任意 Apple Store
-    try {
-        await page.goto(website, { waitUntil: 'networkidle2' });
-        await page.waitForSelector(searchInputSelector);
-        await page.type(searchInputSelector, targetLocation, { delay: 100 });
-        await page.keyboard.press('Enter');
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+            await page.waitForTimeout(getRandomDelay());  // 随机等待
 
-        // 查找 Apple Store 链接并点击
-        const storeLinkSelector = 'a[href*="store"]';
-        const storeLinks = await page.$$(storeLinkSelector);
-
-        if (storeLinks.length > 0) {
-            await storeLinks[0].click();
-            console.log('Opened Apple Store in New Jersey.');
-            await page.waitForNavigation({ waitUntil: 'networkidle0' });
-        }
-    } catch (err) {
-        console.log('Error searching for Apple store in New Jersey:', err);
-    }
-
-    // 第三步和第四步：搜索任意产品并浏览不同服务和功能
-    try {
-        await page.goto(website, { waitUntil: 'networkidle2' });
-        await page.waitForSelector(searchInputSelector);
-        await page.type(searchInputSelector, 'iMac', { delay: 100 });
-        await page.keyboard.press('Enter');
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-        // 浏览服务和功能
-        const servicesSelector = 'a[href*="services"]'; // 假设存在服务链接
-        const serviceLinks = await page.$$(servicesSelector);
-
-        if (serviceLinks.length > 0) {
-            await serviceLinks[0].click();
-            console.log('Exploring different services and aspects.');
-            await page.waitForNavigation({ waitUntil: 'networkidle0' });
-        }
-    } catch (err) {
-        console.log('Error during product search or exploring services:', err);
-    }
-
-    // 第五步：记录时间和结果
-    const end = Date.now();
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', '_');
-    const timeLog = `time: ${(end - start) / 1000} secs | products searched: ${items.join(', ')} | date: ${formattedDate}\n`;
-    
-    fs.appendFile(`${website}_search_results.txt`, timeLog, (err) => {
-        if (err) throw err;
-        console.log('Search results have been saved!');
-    });
-}
-async function amazon(page, website, hrefs, fs, numbers) {
-    const items = ['Heater', 'Vitamin C', 'Swivel Fan', 'Hair Brush', 'Clothes']; // 要搜索的物品列表
-
-    for (const item of items) {
-        try {
-            // 打开 Amazon 网站
-            await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
-
-            // 搜索产品
-            await page.waitForSelector('input[name="field-keywords"]');
-            await page.type('input[name="field-keywords"]', item, { delay: 100 });
-            await page.keyboard.press('Enter');
-            await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-            // 选择第一个产品
-            const firstProductSelector = '.s-main-slot .s-result-item h2 a';
-            await page.waitForSelector(firstProductSelector);
-            const firstProduct = await page.$(firstProductSelector);
-            await firstProduct.click();
-            await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-            // 检查价格
-            const priceSelector = '#priceblock_ourprice, #priceblock_dealprice';
-            await page.waitForSelector(priceSelector);
-            const price = await page.$eval(priceSelector, el => el.innerText);
-            console.log(`Price for ${item}: ${price}`);
-
-            // 浏览评论和图片
-            const reviewsSelector = '#acrCustomerReviewText';
-            const imagesSelector = '#altImages img';
-            const reviews = await page.$eval(reviewsSelector, el => el.innerText);
-            const imageCount = await page.$$eval(imagesSelector, imgs => imgs.length);
-            console.log(`Reviews: ${reviews}`);
-            console.log(`Number of images: ${imageCount}`);
-
-            // 选择规格 (如果有)
-            const specOptionsSelector = '.a-button-inner';
-            const specOptions = await page.$$(specOptionsSelector);
+            // 选择规格（如大小、存储、颜色等）
+            console.log(`Selecting specifications for: ${item}`);
+            const specOptions = await page.$$(specificationsSelector);
             if (specOptions.length > 0) {
-                await specOptions[0].click();  // 选择第一个规格
-                await page.waitForTimeout(1000);  // 等待选择后更新
+                await specOptions[0].click();  // 假设选择第一个规格
+                await page.waitForTimeout(getRandomDelay());
             }
 
-            // 将产品加入购物车
-            const addToCartButtonSelector = '#add-to-cart-button';
-            await page.waitForSelector(addToCartButtonSelector);
-            await page.click(addToCartButtonSelector);
-            console.log(`${item} added to cart.`);
-        } catch (err) {
-            console.log(`Error processing ${item}:`, err);
+            // 加入购物车
+            console.log(`Adding ${item} to cart...`);
+            await page.waitForSelector(addToCartSelector, { visible: true });
+            await page.click(addToCartSelector);
+            await page.waitForTimeout(getRandomDelay());  // 随机等待
+            // 检查是否超过 20 分钟，如果未到达则继续循环浏览
+            const elapsedTime = (Date.now() - startTime) / 1000 / 60;  // 计算已用时间
+            console.log(`Elapsed time: ${elapsedTime.toFixed(2)} minutes`);
         }
-    }
 
-    // 第二部分：进入 Amazon Prime Video 并观看视频
-    try {
-        await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
-        await page.click('#nav-link-prime');  // 点击 Prime 按钮
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-        // 选择视频
-        const videoSelector = '.bxc-grid__image a';
-        await page.waitForSelector(videoSelector);
-        await page.click(videoSelector);
-
-        // 等待 10 分钟观看视频
-        console.log('Watching a video for 10 minutes...');
-        await page.waitForTimeout(10 * 60 * 1000);  // 10 分钟
+        console.log('Finished browsing devices for 20 minutes.');
     } catch (err) {
-        console.log('Error during Amazon Prime Video process:', err);
-    }
-
-    // 第三部分：搜索任意其他产品并加入购物车
-    try {
-        await page.goto('https://www.amazon.com', { waitUntil: 'networkidle2' });
-        await page.type('input[name="field-keywords"]', 'Laptop', { delay: 100 });
-        await page.keyboard.press('Enter');
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-        // 选择第一个产品并加入购物车
-        const firstProductSelector = '.s-main-slot .s-result-item h2 a';
-        await page.waitForSelector(firstProductSelector);
-        const firstProduct = await page.$(firstProductSelector);
-        await firstProduct.click();
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
-
-        // 将产品加入购物车
-        const addToCartButtonSelector = '#add-to-cart-button';
-        await page.waitForSelector(addToCartButtonSelector);
-        await page.click(addToCartButtonSelector);
-        console.log('Laptop added to cart.');
-    } catch (err) {
-        console.log('Error during product search and add to cart:', err);
+        console.log(`Error while browsing Apple website: ${err.message}`);
     }
 }
+
+
+async function scrollPage(page) {
+    await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);  // 向下滚动一屏
+    });
+    await page.waitForTimeout(getRandomDelay());
+}
+
+async function bilibili(page, website, browser) {
+	website = 'https://www.bilibili.com/'
+    while (true) {
+        // 监听新页面的弹出
+        browser.on('targetcreated', async (target) => {
+            const newPage = await target.page();
+            if (newPage) {
+                console.log('New page opened.');
+                await newPage.bringToFront();  // 将新页面置于前端
+
+                // 这里模拟在新页面上执行的操作，假设观看30秒
+                await newPage.waitForTimeout(30000);  // 模拟观看视频30秒
+                console.log('Closing the new page after watching.');
+                await newPage.close();  // 观看完后关闭新页面
+            }
+        });
+
+       try{
+		 // 任务 1：观看视频
+		 console.log("Watching a popular video...");
+		 await page.goto(`${website}v/popular`, { waitUntil: 'networkidle2' });
+		 await page.waitForTimeout(getRandomDelay());  // 随机延迟
+ 
+		 // 选择第一个视频
+		 await scrollPage(page);
+		 const videoSelector = '.video-card';  // 假设选择第一个视频的选择器
+		 await page.waitForSelector(videoSelector);
+		 const videos = await page.$$(videoSelector);
+		 console.log('videos:',videos)
+		 const randomVideo = getRandomItem(videos); // 随机选择一个视
+		 await randomVideo.click();
+		//  await page.click(videoSelector);
+		 await page.waitForTimeout(getRandomDelay());  // 随机延迟观看
+ 
+		 // 模拟观看主页面上的视频30秒
+		 await page.waitForTimeout(30000);  // 观看 30 秒
+		 console.log("Finished watching a video.");
+		 await page.waitForTimeout(getRandomDelay() + 2000);  // 增加随机延迟
+	   }catch (error){
+		console.log("Error occurred while watching a video:", error.message);
+        continue;  // 重新执行任务
+	   }
+
+       try{
+		 // 任务 2：查看音乐频道
+		 console.log("Browsing music channel...");
+		 await page.goto(`${website}v/music`, { waitUntil: 'networkidle2' });
+		 await page.waitForTimeout(getRandomDelay());  // 随机延迟
+ 
+		 // 随机选择一首歌并进入
+		 await scrollPage(page);
+		 const musicVideoSelector = '.bili-video-card';  // 假设是音乐视频的选择器
+		 await page.waitForSelector(musicVideoSelector);
+		 const musicVideos = await page.$$(musicVideoSelector);
+		 console.log('musicVideos:',musicVideos)
+		 const randomMusicVideo = getRandomItem(musicVideos); // 随机选择一个音乐视频
+		 await randomMusicVideo.click();
+		//  await page.click(musicVideoSelector);
+		 await page.waitForTimeout(getRandomDelay());  // 随机延迟观看
+ 
+		 // 模拟观看主页面上的音乐视频30秒 
+		 await page.waitForTimeout(30000);  // 观看 30 秒
+		 console.log("Finished browsing music.");
+		 await page.waitForTimeout(getRandomDelay() + 2000);  // 增加随机延迟
+ 
+		 // 任务 3：观看直播
+		 console.log("Watching a live stream...");
+		 await page.goto(`https://live.bilibili.com/`, { waitUntil: 'networkidle2' });
+		 await page.waitForTimeout(getRandomDelay());  // 随机延迟
+	   }catch (error){
+		console.log("Error occurred while browsing music channel:", error.message);
+        continue;  // 重新执行任务
+	   }
+
+        // 选择一个直播观看
+        // const liveStreamSelector = '.item-border p-absolute w-100 h-100 border-box ts-dot-4';  // 直播视频选择器
+        // await page.waitForSelector(liveStreamSelector);
+        // await page.click(liveStreamSelector);
+        // await page.waitForTimeout(getRandomDelay());  // 随机延迟观看
+
+       try{
+		 // 模拟观看主页面上的直播30秒
+		 await page.waitForTimeout(300000);  // 观看 30 秒
+		 console.log("Finished watching a live stream.");
+		 await page.waitForTimeout(getRandomDelay() + 2000);  // 增加随机延迟
+	   }catch (error){
+		console.log("Error occurred while watching a live stream:", error.message);
+		continue;  // 重新执行任务
+	   }
+    }
+}
+
+
 
 
 
@@ -1512,7 +1432,7 @@ async function main(){
 	
 	console.log();
 	
-	await crawl(page, arguments[2], login=login);
+	await crawl(page, arguments[2], browser,login=login);
 	
 	console.log();
 
