@@ -674,7 +674,7 @@ async function bilibili(page, website, browser) {
 		 await page.waitForTimeout(getRandomDelay());  // 随机延迟观看
  
 		 // 模拟观看主页面上的视频30秒
-		 await page.waitForTimeout(30000);  // 观看 30 秒
+		 await page.waitForTimeout(60000);  // 观看 30 秒
 		 console.log("Finished watching a video.");
 		 await page.waitForTimeout(getRandomDelay() + 2000);  // 增加随机延迟
 	   }catch (error){
@@ -700,7 +700,7 @@ async function bilibili(page, website, browser) {
 		 await page.waitForTimeout(getRandomDelay());  // 随机延迟观看
  
 		 // 模拟观看主页面上的音乐视频30秒 
-		 await page.waitForTimeout(30000);  // 观看 30 秒
+		 await page.waitForTimeout(45000);  // 观看 30 秒
 		 console.log("Finished browsing music.");
 		 await page.waitForTimeout(getRandomDelay() + 2000);  // 增加随机延迟
  
